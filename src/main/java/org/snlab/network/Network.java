@@ -28,6 +28,10 @@ public class Network {
         this("default");
     }
 
+    public Map<String, Device> getDevices() {
+        return this.nameToDevice;
+    }
+
     public Network setName(String name) {
         this.name = name;
         return this;

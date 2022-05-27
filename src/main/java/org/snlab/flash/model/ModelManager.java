@@ -1,4 +1,4 @@
-package org.snlab.flash;
+package org.snlab.flash.model;
 
 
 import java.util.*;
@@ -12,7 +12,7 @@ import org.snlab.network.Rule;
  * An instance of Verifier maintains (1) all verified rules and (2) network model,
  * while the per-vertex model is not maintained.
  */
-public class FlashCore {
+public class ModelManager {
     public final BDDEngine bddEngine;
     private int size = 32;
     private final HashMap<Device, TrieRules> deviceToRules;
@@ -21,25 +21,25 @@ public class FlashCore {
 
     private double s1 = 0, s1to2 = 0, s2 = 0, sports = 0;
 
-    public FlashCore(Network network) {
+    public ModelManager(Network network) {
         this(network, new BDDEngine(32), new PersistentPorts());
     }
 
-    public FlashCore(Network network, int size) {
+    public ModelManager(Network network, int size) {
         this(network, new BDDEngine(size), new PersistentPorts());
         this.size = size;
     }
 
-    public FlashCore(Network network, Ports base) {
+    public ModelManager(Network network, Ports base) {
         this(network, new BDDEngine(32), base);
     }
 
-    public FlashCore(Network network, int size, Ports base) {
+    public ModelManager(Network network, int size, Ports base) {
         this(network, new BDDEngine(size), base);
         this.size = size;
     }
 
-    public FlashCore(Network network, BDDEngine bddEngine, Ports base) {
+    public ModelManager(Network network, BDDEngine bddEngine, Ports base) {
         this.bddEngine = bddEngine;
         this.deviceToRules = new HashMap<>();
 

@@ -36,6 +36,16 @@
       <artifactId>jgrapht-core</artifactId>
       <version>1.5.0</version>
   </dependency>
+  <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>30.0-jre</version>
+  </dependency>
+  <dependency>
+      <groupId>dk.brics.automaton</groupId>
+      <artifactId>automaton</artifactId>
+      <version>1.11-8</version>
+  </dependency>
   </dependencies>
 
   <build>

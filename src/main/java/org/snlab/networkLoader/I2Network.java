@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import org.snlab.flash.Changes;
-import org.snlab.flash.FlashCore;
-import org.snlab.flash.PersistentPorts;
+import org.snlab.flash.model.Changes;
+import org.snlab.flash.model.ModelManager;
+import org.snlab.flash.model.PersistentPorts;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Rule;
@@ -77,7 +77,7 @@ public class I2Network {
         // System.exit(1);
         for (int i = 0; i < 10; i++) {
             Network n = getNetwork();
-            FlashCore verifier = new FlashCore(n, new PersistentPorts());
+            ModelManager verifier = new ModelManager(n, new PersistentPorts());
             long s = System.nanoTime();
             Changes cgs = verifier.insertMiniBatch(n.getInitialRules());
             verifier.update(cgs);

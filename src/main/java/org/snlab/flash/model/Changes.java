@@ -1,4 +1,4 @@
-package org.snlab.flash;
+package org.snlab.flash.model;
 
 
 import java.util.HashMap;

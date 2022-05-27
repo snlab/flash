@@ -26,6 +26,16 @@ public class Device {
         this.initialRules = new ArrayList<>();
     }
 
+    public Port getPortByName(String name) {
+        return nameToPort.get(name);
+    }
+
+    public Port addPortByName(String name) {
+        Port p = new Port(name);
+        nameToPort.put(name, p);
+        return p;
+    }
+
     public void addInitialRule(Rule rule) {
         this.initialRules.add(rule);
     }

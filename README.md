@@ -3,7 +3,29 @@
 This repo contains the Flash artifact for evaluations in SIGCOMM22 paper "Flash: Fast, Consistent Data Plane Verification for Large-Scale Network Settings".
 
 **Table of Contents**
-
+- [Environment setup](#environment-setup)
+  - [Platform requirements](#platform-requirements)
+  - [Get Flash and datasets for evaluation](#get-flash-and-datasets-for-evaluation)
+  - [Build Flash and extract datasets](#build-flash-and-extract-datasets)
+  - [Command line options](#command-line-options)
+- [Model Construction Evaluations](#model-construction-evaluations)
+- [Micro Benchmarks](#micro-benchmarks)
+- [Consistent Efficient Early Detection (CE2D) Evaluations](#consistent-efficient-early-detection-ce2d-evaluations)
+  - [Consistent loop detection on OpenR dataset](#consistent-loop-detection-on-openr-dataset)
+    - [Dataset description](#dataset-description)
+    - [Run the evaluation](#run-the-evaluation)
+    - [Expected output](#expected-output)
+  - [Consistent loop detection on OpenR* dataset](#consistent-loop-detection-on-openr-dataset-1)
+    - [Dataset description](#dataset-description-1)
+    - [Run the evaluation](#run-the-evaluation-1)
+    - [Expected output](#expected-output-1)
+  - [Consistent Loop Detection on I2* dataset](#consistent-loop-detection-on-i2-dataset)
+    - [Dataset description](#dataset-description-2)
+    - [Run the evaluation](#run-the-evaluation-2)
+    - [Expected output](#expected-output-2)
+  - [All pair reachability check on LNet dataset](#all-pair-reachability-check-on-lnet-dataset)
+    - [Run the evaluation](#run-the-evaluation-3)
+    - [Expected output](#expected-output-3)
 # Environment setup
 ## Platform requirements
 To run the artifact and run evaluations, the following prefered platform and software suits are required:
@@ -74,7 +96,7 @@ $ ./flash -d I2OpenR -e
 ### Expected output
 Figure 7(a)
 
-## Consistent loop detection on buggy OpenR* dataset
+## Consistent loop detection on OpenR* dataset
 ### Dataset description
 
 ### Run the evaluation

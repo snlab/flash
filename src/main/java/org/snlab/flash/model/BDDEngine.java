@@ -1,4 +1,4 @@
-package org.snlab.flash;
+package org.snlab.flash.model;
 
 import jdd.bdd.BDD;
 import java.math.BigInteger;
