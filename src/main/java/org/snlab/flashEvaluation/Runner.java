@@ -1,9 +1,9 @@
 package org.snlab.flashEvaluation;
 
 public class Runner {
-    private Options options;
+    private EvalOptions options;
 
-    public Runner(Options options) {
+    public Runner(EvalOptions options) {
         this.options = options;
     }
 
