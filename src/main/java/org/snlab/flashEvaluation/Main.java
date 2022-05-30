@@ -1,6 +1,7 @@
 package org.snlab.flashEvaluation;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,7 +14,8 @@ public class Main {
                 jc.usage();
                 System.exit(0);
             }
-        } catch (Exception e) {
+        } catch (ParameterException e) {
+            e.printStackTrace();
             jc.usage();
         }
         Runner runner = new Runner(options);

@@ -8,6 +8,10 @@ public class Runner {
     }
 
     public void run() {
-        
+        if (options.eval.equals("I2LongTail")) {
+            I2LongTail.run();
+        }
     }
+
+    
 }

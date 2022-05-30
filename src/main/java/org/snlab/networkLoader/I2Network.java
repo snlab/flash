@@ -21,7 +21,7 @@ public class I2Network {
         for (String name : devicenames) {
             Device device = n.addDevice(name);
             try {
-                Scanner in = new Scanner(new File("i2/" + name + "apnotcomp"));
+                Scanner in = new Scanner(new File("dataset/I2/" + name + "apnotcomp"));
                 while (in.hasNextLine()) {
                     String line = in.nextLine();
                     String[] tokens = line.split(" ");

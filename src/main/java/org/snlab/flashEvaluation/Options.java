@@ -15,6 +15,9 @@ public class Options {
     @Parameter(names = { "-log", "-verbose" }, description = "Level of verbosity")
     public Integer verbose = 1;
 
+    @Parameter(names = "-eval", required = true, description = "The evaluation to be run")
+    public String eval;
+
     @Parameter(names = "-dataset", required = true, description = "The dataset to be run")
     public String dataset;
 
