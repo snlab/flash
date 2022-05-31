@@ -1,45 +1,43 @@
-package org.snlab.flash.model;
+package org.snlab.flash.ModelManager;
 
 
 import java.util.*;
 
+import org.snlab.flash.ModelManager.Ports.Ports;
+import org.snlab.flash.ModelManager.Ports.PersistentPorts;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
 import org.snlab.network.Rule;
 
-/**
- * An instance of Verifier maintains (1) all verified rules and (2) network model,
- * while the per-vertex model is not maintained.
- */
-public class ModelManager {
+public class InverseModel {
     public final BDDEngine bddEngine;
-    private int size = 32;
-    private final HashMap<Device, TrieRules> deviceToRules;
+    private int size = 32; // length of packet header
 
-    public HashMap<Ports, Integer> portsToPredicate;
+    private final HashMap<Device, TrieRules> deviceToRules; // FIB snapshots
+    public HashMap<Ports, Integer> portsToPredicate; // network inverse model
 
     private double s1 = 0, s1to2 = 0, s2 = 0, sports = 0;
 
-    public ModelManager(Network network) {
+    public InverseModel(Network network) {
         this(network, new BDDEngine(32), new PersistentPorts());
     }
 
-    public ModelManager(Network network, int size) {
+    public InverseModel(Network network, int size) {
         this(network, new BDDEngine(size), new PersistentPorts());
         this.size = size;
     }
 
-    public ModelManager(Network network, Ports base) {
+    public InverseModel(Network network, Ports base) {
         this(network, new BDDEngine(32), base);
     }
 
-    public ModelManager(Network network, int size, Ports base) {
+    public InverseModel(Network network, int size, Ports base) {
         this(network, new BDDEngine(size), base);
         this.size = size;
     }
 
-    public ModelManager(Network network, BDDEngine bddEngine, Ports base) {
+    public InverseModel(Network network, BDDEngine bddEngine, Ports base) {
         this.bddEngine = bddEngine;
         this.deviceToRules = new HashMap<>();
 
@@ -55,7 +53,6 @@ public class ModelManager {
             rule.setBddmatch(BDDEngine.BDDTrue);
             deviceToRules.get(device).insert(rule, size);
         }
-
 
         // The only one EC takes default actions.
         this.portsToPredicate = new HashMap<>();
@@ -95,6 +92,7 @@ public class ModelManager {
         s1 += System.nanoTime();
         return ret;
     }
+
     /**
      * @param rule an inserted rule
      * @param ret  the pointer to the value returned by this function
@@ -173,6 +171,7 @@ public class ModelManager {
     }
 
     /**
+     * Fast Inverse Model Transformation
      * Updates the PPM following changes and returns all transferred ECs.
      *
      * @param changes -
@@ -251,19 +250,12 @@ public class ModelManager {
     }
 
     public double printTime(int size) {
-        if (size == 0) {
-            long nsToMs = 1000L * 1000L;
-            System.out.println("    Stage 1 (Change Computation) " + (s1 / nsToMs) + " ms in total");
-            System.out.println("    Composition of changes " + (s1to2 / nsToMs) + " ms in total");
-            System.out.println("    Stage 2 (EC Update) " + (s2 / nsToMs) + " ms in total");
-            System.out.println("    Ports " + (sports / nsToMs) + " ms in total");
-        } else {
-            long nsToUsPU = 1000L * size;
-            System.out.println("    Stage 1 (Change Computation) " + (s1 / nsToUsPU) + " us per-update");
-            System.out.println("    Composition of changes " + (s1to2 / nsToUsPU) + " us per-update");
-            System.out.println("    Stage 2 (EC Update) " + (s2 / nsToUsPU) + " us per-update");
-            System.out.println("    Ports " + (sports / nsToUsPU) + " us per-update");
-        }
+        long nsToUsPU = 1000L * size;
+        if (size == 0)  nsToUsPU = 1000L * 1000L;
+        System.out.println("    Stage 1 (Update Block Computation) " + (s1 / nsToUsPU) + " us per-update");
+        System.out.println("    Converting to Conflict-free Update Block " + (s1to2 / nsToUsPU) + " us per-update");
+        System.out.println("    Stage 2 (Model Update) " + (s2 / nsToUsPU) + " us per-update");
+        System.out.println("    Ports " + (sports / nsToUsPU) + " us per-update");
         return s1 + s1to2 + s2;
     }
 }

@@ -2,13 +2,11 @@ package org.snlab.networkLoader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
-import org.snlab.flash.model.Changes;
-import org.snlab.flash.model.ModelManager;
-import org.snlab.flash.model.PersistentPorts;
+import org.snlab.flash.ModelManager.Ports.PersistentPorts;
+import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Rule;
@@ -21,7 +19,7 @@ public class I2Network {
         for (String name : devicenames) {
             Device device = n.addDevice(name);
             try {
-                Scanner in = new Scanner(new File("i2/" + name + "apnotcomp"));
+                Scanner in = new Scanner(new File("dataset/I2/" + name + "apnotcomp"));
                 while (in.hasNextLine()) {
                     String line = in.nextLine();
                     String[] tokens = line.split(" ");
@@ -77,7 +75,7 @@ public class I2Network {
         // System.exit(1);
         for (int i = 0; i < 10; i++) {
             Network n = getNetwork();
-            ModelManager verifier = new ModelManager(n, new PersistentPorts());
+            InverseModel verifier = new InverseModel(n, new PersistentPorts());
             long s = System.nanoTime();
             Changes cgs = verifier.insertMiniBatch(n.getInitialRules());
             verifier.update(cgs);
