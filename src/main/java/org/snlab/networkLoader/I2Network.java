@@ -12,12 +12,13 @@ import org.snlab.network.Network;
 import org.snlab.network.Rule;
 
 public class I2Network {
+    static public String[] devicenames = {"atla", "chic", "hous", "kans", "losa", "newy32aoa", "salt", "seat", "wash"};
+
     public static Network getNetwork() {
-        Network n = new Network("Internet2");
-        String[] devicenames = {"atla", "chic", "hous", "kans", "losa", "newy32aoa", "salt", "seat", "wash"};
+        Network n = getTopo();
 
         for (String name : devicenames) {
-            Device device = n.addDevice(name);
+            Device device = n.getDevice(name);
             try {
                 Scanner in = new Scanner(new File("dataset/I2/" + name + "apnotcomp"));
                 while (in.hasNextLine()) {
@@ -35,6 +36,15 @@ public class I2Network {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        }
+        return n;
+    }
+    
+    public static Network getTopo() {
+        Network n = new Network("Internet2");
+
+        for (String name : devicenames) {
+            n.addDevice(name);
         }
 
         n.addLink("chic", "xe-0/1/0", "newy32aoa", "xe-0/1/3");

@@ -26,6 +26,15 @@ public class Device {
         this.initialRules = new ArrayList<>();
     }
 
+    public Rule getRule(int prefix, int mask) {
+        for (Rule r : this.initialRules) {
+            if (r.getPrefix() == prefix && r.getPriority() == mask) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public Port getPortByName(String name) {
         return nameToPort.get(name);
     }

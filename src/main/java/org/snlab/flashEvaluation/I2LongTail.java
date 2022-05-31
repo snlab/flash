@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.snlab.flash.CE2D.EarlyDetector;
 import org.snlab.flash.CE2D.Setting;
-import org.snlab.flash.model.Changes;
-import org.snlab.flash.model.ModelManager;
+import org.snlab.flash.ModelManager.InverseModel;
+import org.snlab.flash.ModelManager.Changes;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.networkLoader.I2Network;
@@ -27,7 +27,7 @@ public class I2LongTail {
                 Collections.shuffle(shuffled);
                 List<Device> remains = shuffled.subList(0, 9 - i);
 
-                ModelManager verifier = new ModelManager(network);
+                InverseModel verifier = new InverseModel(network);
                 EarlyDetector earlyDetector = new EarlyDetector();
                 long startAt = System.nanoTime();
                 for (Device device : remains) {

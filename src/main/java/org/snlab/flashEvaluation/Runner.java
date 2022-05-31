@@ -11,6 +11,9 @@ public class Runner {
         if (options.eval.equals("I2LongTail")) {
             I2LongTail.run();
         }
+        if (options.eval.equals("I2CE2D")) {
+            I2CE2D.run();
+        }
     }
 
     

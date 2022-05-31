@@ -1,10 +1,6 @@
 package org.snlab.flashEvaluation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import com.beust.jcommander.Parameter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -49,7 +45,7 @@ public class EvalOptions {
             throw new ParseException("help");
         }
         CommandLine c = parser.parse(options, args);
-        
+
         if (!c.hasOption("e")) {
             throw new ParseException("Missing required option: ee");
         }
