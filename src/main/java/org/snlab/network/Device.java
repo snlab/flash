@@ -1,6 +1,7 @@
 package org.snlab.network;
 
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,9 +27,9 @@ public class Device {
         this.initialRules = new ArrayList<>();
     }
 
-    public Rule getRule(int prefix, int mask) {
+    public Rule getRule(BigInteger match, int mask) {
         for (Rule r : this.initialRules) {
-            if (r.getPrefix() == prefix && r.getPriority() == mask) {
+            if (r.getMatch().equals(match) && r.getPrefix() == mask) {
                 return r;
             }
         }
