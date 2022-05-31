@@ -22,7 +22,7 @@ import org.snlab.network.Update;
 import org.snlab.networkLoader.I2Network;
 
 public class I2CE2D {
-    static String mode = "PUV"; // PUV/BUV/CE2D
+    static String mode = "CE2D"; // PUV/BUV/CE2D
 
     public static void run() {
         Network network = I2Network.getTopo();
@@ -134,8 +134,8 @@ public class I2CE2D {
              * directly apply updates to the first model
              */
             List<List<Update>> partitions = Lists.partition(updates, 10);
-            System.out.println(partitions.size());
 
+            EarlyDetector earlyDetector = new EarlyDetector();
             for (List<Update> subUpdates : partitions) {
                 List<Rule> insertions = new ArrayList<>();
                 List<Rule> deletions = new ArrayList<>();
@@ -158,7 +158,6 @@ public class I2CE2D {
                         newClosed.add(update.getDevice());
                     }
                 }
-                EarlyDetector earlyDetector = new EarlyDetector();
                 earlyDetector.detectLoop(setting, network, newClosed, model.getPortToPredicate());
             }
         }

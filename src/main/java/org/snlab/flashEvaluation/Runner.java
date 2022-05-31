@@ -14,6 +14,9 @@ public class Runner {
         if (options.eval.equals("I2CE2D")) {
             I2CE2D.run();
         }
+        if (options.eval.equals("I2EarlyDetection")) {
+            I2EarlyDetection.run();
+        }
     }
 
     
