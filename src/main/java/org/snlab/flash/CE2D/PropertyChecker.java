@@ -8,7 +8,7 @@ import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
 
-public class PropertyChcker {
+public class PropertyChecker {
     public boolean hasLoop = false;
 
     public void checkLoop(Network network, Map<Port, HashSet<Integer>> model) {

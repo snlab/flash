@@ -1,21 +1,21 @@
-package org.snlab.flashEvaluation;
+package org.snlab.evaluation;
 
 import org.apache.commons.cli.ParseException;
 
 public class Main {
+    static public EvalOptions evalOptions = new EvalOptions();
+
     public static void main(String[] args) {
-        EvalOptions options = new EvalOptions();
         try {
-            options.parse(args);
+            evalOptions.parse(args);
         } catch (ParseException e) {
             if (!e.getMessage().equals("help")) {
                 System.out.println(e.getMessage());
-                options.showUsage();
+                evalOptions.showUsage();
             }
             System.exit(1);
         }
         
-        Runner runner = new Runner(options);
-        runner.run();
+        Runner.run();
     }
 }

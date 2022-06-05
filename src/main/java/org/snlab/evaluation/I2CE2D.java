@@ -1,4 +1,4 @@
-package org.snlab.flashEvaluation;
+package org.snlab.evaluation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import org.snlab.flash.CE2D.EarlyDetector;
-import org.snlab.flash.CE2D.PropertyChcker;
+import org.snlab.flash.CE2D.PropertyChecker;
 import org.snlab.flash.CE2D.Setting;
 import org.snlab.flash.ModelManager.Changes;
 import org.snlab.flash.ModelManager.InverseModel;
@@ -19,10 +19,11 @@ import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Rule;
 import org.snlab.network.Update;
+import org.snlab.network.Update.Type;
 import org.snlab.networkLoader.I2Network;
 
 public class I2CE2D {
-    static String mode = "CE2D"; // PUV/BUV/CE2D
+    static String mode = Main.evalOptions.mode; // PUV/BUV/CE2D
 
     public static void run() {
         Network network = I2Network.getTopo();
@@ -71,7 +72,8 @@ public class I2CE2D {
                 }
                 long ip = Long.parseLong(tokens[2]);
                 Rule rule = new Rule(device, ip, Integer.parseInt(tokens[3]), device.getPort(pn));
-                Update update = new Update(tokens[0], device, rule);
+                Type type = tokens[0].equals("+") ? Type.INSERT : Type.DELETE;
+                Update update = new Update(type, device, rule);
                 if (tokens.length == 6) { // the last update
                     update.setIsLast(true);
                 }
@@ -83,7 +85,7 @@ public class I2CE2D {
         if (mode.equals("PUV")) {
             for (Update update : updates) {
                 Changes cgs;
-                if (update.getMode().equals("+")) {
+                if (update.getMode() == Type.INSERT) {
                     cgs = model.miniBatch(Arrays.asList(update.getRule()), new ArrayList<>());
                 } else {
                     Rule rule = update.getDevice().getRule(update.getRule().getMatch(), update.getRule().getPrefix());
@@ -94,7 +96,7 @@ public class I2CE2D {
                     cgs = model.miniBatch(new ArrayList<>(), Arrays.asList(rule));
                 }
                 model.update(cgs);
-                PropertyChcker propertyChcker = new PropertyChcker();
+                PropertyChecker propertyChcker = new PropertyChecker();
                 propertyChcker.checkLoop(network, model.getPortToPredicate());
                 if (propertyChcker.hasLoop) {
                     System.out.println(update.getRule().getDevice().getName());
@@ -104,14 +106,16 @@ public class I2CE2D {
             }
             
         } else if (mode.equals("BUV")) {
+            /**
+             * Batch size 10
+             */
             List<List<Update>> partitions = Lists.partition(updates, 10);
-            System.out.println(partitions.size());
 
             for (List<Update> subUpdates : partitions) {
                 List<Rule> insertions = new ArrayList<>();
                 List<Rule> deletions = new ArrayList<>();
                 for (Update update : subUpdates) {
-                    if (update.getMode().equals("+")) {
+                    if (update.getMode() == Type.INSERT) {
                         insertions.add(update.getRule());
                     } else {
                         Rule rule = update.getDevice().getRule(update.getRule().getMatch(),
@@ -121,7 +125,7 @@ public class I2CE2D {
                 }
                 Changes cgs = model.miniBatch(insertions, deletions);
                 model.update(cgs);
-                PropertyChcker propertyChcker = new PropertyChcker();
+                PropertyChecker propertyChcker = new PropertyChecker();
                 propertyChcker.checkLoop(network, model.getPortToPredicate());
                 if (propertyChcker.hasLoop) {
                     System.out.println(subUpdates.get(subUpdates.size() - 1).getDevice().getName());
@@ -140,7 +144,7 @@ public class I2CE2D {
                 List<Rule> insertions = new ArrayList<>();
                 List<Rule> deletions = new ArrayList<>();
                 for (Update update : subUpdates) {
-                    if (update.getMode().equals("+")) {
+                    if (update.getMode() == Type.INSERT) {
                         insertions.add(update.getRule());
                     } else {
                         Rule rule = update.getDevice().getRule(update.getRule().getMatch(),

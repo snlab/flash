@@ -1,4 +1,4 @@
-package org.snlab.flashEvaluation;
+package org.snlab.evaluation;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package org.snlab.flashEvaluation;
+package org.snlab.evaluation;
 
 import java.util.Arrays;
 
@@ -19,6 +19,9 @@ public class EvalOptions {
     public boolean enablePAT = true;
     public boolean enableCE2D = true;
     public boolean debug = false;
+    public String output;
+
+    public String mode = "CE2D";
 
     private CommandLineParser parser = new DefaultParser();
     private Options options = new Options();
@@ -30,8 +33,11 @@ public class EvalOptions {
         options.addOption("disablePAT", false, "Disable Persistent Action Tree");
         options.addOption("disableCE2D", false, "Disable Consistent Efficient Early Detection");
         options.addOption("r", "req", true, "Verification requirement");
+        options.addOption("o", "output", true, "Output report file");
         options.addOption("h", "help", false, "Print this message");
         options.addOption("debug", false, "Enable debug mode");
+
+        options.addOption("mode", true, "XXX mode");
     }
 
     public void showUsage() {
@@ -51,6 +57,7 @@ public class EvalOptions {
         }
         eval = c.getOptionValue("e");
         dataset = c.getOptionValue("d");
+        
         if (c.hasOption("disableFIMT")) {
             enableFIMT = false;
         }
@@ -62,6 +69,9 @@ public class EvalOptions {
         }
         if (c.hasOption("debug")) {
             debug = true;
+        }
+        if (c.hasOption("mode")) {
+            mode = c.getOptionValue("mode");
         }
     }
 }

@@ -1,12 +1,17 @@
 package org.snlab.network;
 
 public class Update {
-    private String mode;
+    public enum Type {
+        INSERT, DELETE
+    }
+
+    private Type mode;
     private Device device;
     private Rule rule;
     private boolean isLast = false;
+    private String epoch = "0"; // epoch is "0" if not set
 
-    public Update(String mode, Device device, Rule rule) {
+    public Update(Type mode, Device device, Rule rule) {
         this.mode = mode;
         this.device = device;
         this.rule = rule;
@@ -15,14 +20,14 @@ public class Update {
     /**
      * @return String return the mode
      */
-    public String getMode() {
+    public Type getMode() {
         return mode;
     }
 
     /**
      * @param mode the mode to set
      */
-    public void setMode(String mode) {
+    public void setMode(Type mode) {
         this.mode = mode;
     }
 
@@ -54,7 +59,6 @@ public class Update {
         this.isLast = isLast;
     }
 
-
     /**
      * @return Device return the device
      */
@@ -67,6 +71,21 @@ public class Update {
      */
     public Rule getRule() {
         return rule;
+    }
+
+
+    /**
+     * @return String return the epoch
+     */
+    public String getEpoch() {
+        return epoch;
+    }
+
+    /**
+     * @param epoch the epoch to set
+     */
+    public void setEpoch(String epoch) {
+        this.epoch = epoch;
     }
 
 }
