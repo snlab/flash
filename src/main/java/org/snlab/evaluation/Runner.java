@@ -9,6 +9,8 @@ public class Runner {
             I2CE2D.run();
         } else if (Main.evalOptions.eval.equals("I2EarlyDetection")) {
             I2EarlyDetection.run();
+        } else if (Main.evalOptions.eval.equals("LNet1AllPair")) {
+            LNet1AllPair.run();
         } else {
             System.out.println("Unknown evaluation name: " + Main.evalOptions.eval);
         }

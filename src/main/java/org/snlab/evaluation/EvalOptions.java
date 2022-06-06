@@ -53,7 +53,7 @@ public class EvalOptions {
         CommandLine c = parser.parse(options, args);
 
         if (!c.hasOption("e")) {
-            throw new ParseException("Missing required option: ee");
+            throw new ParseException("Missing required option: e");
         }
         eval = c.getOptionValue("e");
         dataset = c.getOptionValue("d");
