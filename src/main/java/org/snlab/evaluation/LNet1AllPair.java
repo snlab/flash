@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.snlab.flash.CE2D.AllPairChecker;
@@ -34,13 +35,13 @@ public class LNet1AllPair {
                     .filter(rule -> rule.getMatch().longValue() == ip)
                     .collect(Collectors.toList());
             Changes changes = model.insertMiniBatch(rulesInSubspace);
-            model.update(changes);
-
+            Set<Integer> transfered = model.update(changes);
+            
+            long s = System.nanoTime();
             Map<Integer, Ports> ecToPorts = new HashMap<>();
             for (Map.Entry<Ports, Integer> entry : model.portsToPredicate.entrySet()) {
                 ecToPorts.put(entry.getValue(), entry.getKey());
             }
-            long s = System.nanoTime();
             policyChecker.check(model.portsToPredicate.values(), device, ecToPorts, model.getPortToPredicate());
             System.out.println(System.nanoTime() - s);
         }

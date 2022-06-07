@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.DelayQueue;
 
 import com.google.common.collect.Lists;
 
+import org.snlab.flash.Dispatcher;
 import org.snlab.flash.CE2D.EarlyDetector;
 import org.snlab.flash.CE2D.PropertyChecker;
 import org.snlab.flash.CE2D.Setting;
@@ -24,9 +26,12 @@ import org.snlab.networkLoader.I2Network;
 
 public class I2CE2D {
     static String mode = Main.evalOptions.mode; // PUV/BUV/CE2D
+    private static DelayQueue<UpdateTrace> dq = new DelayQueue<>();
+    static int delay = 10;
 
     public static void run() {
         Network network = I2Network.getTopo();
+        List<UpdateTrace> trace = new ArrayList<>();
 
         try {
             Scanner in = new Scanner(new File("dataset/I2OpenR/trace.txt"));
@@ -42,10 +47,59 @@ public class I2CE2D {
                 Rule rule = new Rule(device, ip, Integer.parseInt(tokens[3]), device.getPort(pn));
                 device.addInitialRule(rule);
                 network.addInitialRule(rule);
+                UpdateTrace ut = new UpdateTrace(Type.INSERT, device, rule, delay++);
+                trace.add(ut);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        delay += 50;
+        try {
+            Scanner in = new Scanner(new File("dataset/I2OpenR/update.txt"));
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                String[] tokens = line.split(" ");
+                Device device = network.getDevice(tokens[1]);
+                String pn = tokens[4].split("\\.")[0];
+                if (device.getPort(pn) == null) {
+                    device.addPort(pn);
+                }
+                long ip = Long.parseLong(tokens[2]);
+                Rule rule = new Rule(device, ip, Integer.parseInt(tokens[3]), device.getPort(pn));
+                Type type = tokens[0].equals("+") ? Type.INSERT : Type.DELETE;
+                UpdateTrace update = new UpdateTrace(type, device, rule, delay++);
+                update.setEpoch("1");
+                if (tokens.length == 6) { // the last update
+                    update.setIsLast(true);
+                }
+                trace.add(update);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        dq.addAll(trace);
+
+        Dispatcher dispatcher = new Dispatcher(network, Main.evalOptions.batchSize);
+        if (Main.evalOptions.mode.equals("PUV")) {
+            dispatcher = new Dispatcher(network, 1);
+        } else { // BUV and CE2D use batch size 10
+            dispatcher = new Dispatcher(network, 10);
+        }
+        while (true) {
+            try {
+                UpdateTrace update = dq.take();
+                dispatcher.dispatch(update);
+                if (dq.size() == 0) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.exit(1);
 
         InverseModel model = new InverseModel(network);
         for (Rule rule : network.getInitialRules()) {

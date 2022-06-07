@@ -15,6 +15,7 @@ public class EvalOptions {
      */
     public String eval;
     public String dataset;
+    public int batchSize = 1;
     public boolean enableFIMT = true;
     public boolean enablePAT = true;
     public boolean enableCE2D = true;
@@ -29,6 +30,7 @@ public class EvalOptions {
     public EvalOptions() {
         options.addRequiredOption("e", "eval", true, "The evaluation to be run");
         options.addOption("d", "dataset", true, "The dataset for evaluation");
+        options.addOption("b", "batch", true, "The batch size for FIMT");
         options.addOption("disableFIMT", false, "Disable Fast Inverse Model Transformation");
         options.addOption("disablePAT", false, "Disable Persistent Action Tree");
         options.addOption("disableCE2D", false, "Disable Consistent Efficient Early Detection");
@@ -72,6 +74,9 @@ public class EvalOptions {
         }
         if (c.hasOption("mode")) {
             mode = c.getOptionValue("mode");
+        }
+        if (c.hasOption("b")) {
+            batchSize = Integer.valueOf(c.getOptionValue("b"));
         }
     }
 }

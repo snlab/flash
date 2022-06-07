@@ -10,10 +10,17 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
+import org.snlab.evaluation.Main;
+import org.snlab.flash.CE2D.EarlyDetector;
+import org.snlab.flash.CE2D.PropertyChecker;
+import org.snlab.flash.CE2D.Setting;
+import org.snlab.flash.ModelManager.Changes;
 import org.snlab.flash.ModelManager.InverseModel;
+import org.snlab.network.Device;
 import org.snlab.network.Network;
+import org.snlab.network.Rule;
 import org.snlab.network.Update;
+import org.snlab.network.Update.Type;
 
 /**
  * Dispatch updates to (epoch, subspace) model
@@ -45,10 +52,13 @@ public class Dispatcher {
         for (Update update : updates) {
             if (!epochToInstance.containsKey(update.getEpoch())) {
                 EpochInstance instance = new EpochInstance(update.getEpoch(), network, batchSize);
+                if (update.getEpoch().equals("1")) {
+                    instance.model = epochToInstance.get("0").model;
+                }
                 epochToInstance.put(update.getEpoch(), instance);
-
-                instance.addUpdate(update);
             }
+
+            epochToInstance.get(update.getEpoch()).addUpdate(update);
             activeInstances.add(epochToInstance.get(update.getEpoch()));
         }
 
@@ -60,8 +70,9 @@ public class Dispatcher {
     private class EpochInstance {
         private String epoch;
         private BlockingQueue<Update> updateQueue = new LinkedBlockingQueue<>();
-        private InverseModel model;
+        public InverseModel model;
         private int batchSize;
+        private EarlyDetector earlyDetector = new EarlyDetector();
 
         public EpochInstance(String epoch, Network network, int batchSize) {
             this.epoch = epoch;
@@ -74,7 +85,42 @@ public class Dispatcher {
         }
 
         public void active() {
+            while (updateQueue.size() >= batchSize) {
+                List<Update> updates = new ArrayList<>();
+                updateQueue.drainTo(updates, batchSize);
 
+                List<Rule> insertions = new ArrayList<>();
+                List<Rule> deletions = new ArrayList<>();
+                for (Update update : updates) {
+                    if (update.getMode() == Type.INSERT) {
+                        insertions.add(update.getRule());
+                    } else {
+                        Rule rule = update.getDevice().getRule(update.getRule().getMatch(),
+                                update.getRule().getPrefix());
+                        deletions.add(rule);
+                    }
+                }
+                Changes cgs = model.miniBatch(insertions, deletions);
+                model.update(cgs);
+                if (Main.evalOptions.mode.equals("PUV") || Main.evalOptions.mode.equals("BUV")) {
+                    PropertyChecker propertyChcker = new PropertyChecker();
+                    propertyChcker.checkLoop(network, model.getPortToPredicate());
+                    if (propertyChcker.hasLoop) {
+                        System.out.println(updates.get(updates.size() - 1).getDevice().getName());
+                        System.out.println(updates.get(updates.size() - 1).getRule().getMatch());
+                        break;
+                    }
+                } else {
+                    Setting setting = new Setting(0, 0, System.nanoTime());
+                    Set<Device> newClosed = new HashSet<>();
+                    for (Update update : updates) {
+                        if (update.isIsLast()) {
+                            newClosed.add(update.getDevice());
+                        }
+                    }
+                    earlyDetector.detectLoop(setting, network, newClosed, model.getPortToPredicate());
+                }
+            }
         }
     }
 }
