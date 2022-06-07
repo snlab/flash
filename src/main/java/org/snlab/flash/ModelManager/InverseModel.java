@@ -214,10 +214,11 @@ public class InverseModel {
 
                 if (intersection != predicate) {
                     // EC is partially affected by change, which causes split
-                    transferredECs.add(intersection);
+                    // transferredECs.add(intersection);
                     insertPredicate(newPortsToPreds, ports, bddEngine.diff(predicate, intersection));
                 }
                 // The intersection is transferred
+                transferredECs.add(intersection);
                 sports -= System.nanoTime();
                 Ports portsT = ports.createWithChanges(entryI.getValue());
                 sports += System.nanoTime();

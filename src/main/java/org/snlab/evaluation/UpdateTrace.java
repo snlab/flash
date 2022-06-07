@@ -10,6 +10,8 @@ import org.snlab.network.Update;
 public class UpdateTrace extends Update implements Delayed {
     private long delay;
     private long until;
+    private static int order = 0;
+    private int order_;
 
     public UpdateTrace(Type mode, Device device, Rule rule) {
         super(mode, device, rule);
@@ -18,12 +20,14 @@ public class UpdateTrace extends Update implements Delayed {
     public UpdateTrace(Type mode, Device device, Rule rule, long delay) {
         super(mode, device, rule);
         this.until = System.currentTimeMillis() + delay;
+        this.order_ = order++;
     }
 
     @Override
     public int compareTo(Delayed o) {
         UpdateTrace other = (UpdateTrace) o;
-        return until - other.until > 0 ? 1 : -1;
+        return order_ - other.order_ > 0 ? 1 : -1;
+        // return until - other.until > 0 ? 1 : -1;
     }
 
     @Override

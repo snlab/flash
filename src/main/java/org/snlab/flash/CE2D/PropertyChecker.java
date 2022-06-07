@@ -3,6 +3,7 @@ package org.snlab.flash.CE2D;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.snlab.network.Device;
 import org.snlab.network.Network;
@@ -11,19 +12,18 @@ import org.snlab.network.Port;
 public class PropertyChecker {
     public boolean hasLoop = false;
 
-    public void checkLoop(Network network, Map<Port, HashSet<Integer>> model) {
+    public void checkLoop(Network network, Map<Port, HashSet<Integer>> model, Set<Integer> transfered) {
         for (Device device : network.getAllDevices()) {
-            traverse(device, null, new HashSet<>(), model);
+            traverse(device, transfered, new HashSet<>(), model);
         }
     }
 
-    private void traverse(Device current, HashSet<Integer> predicates, HashSet<Device> history, Map<Port, HashSet<Integer>> networkModel) {
+    private void traverse(Device current, Set<Integer> predicates, HashSet<Device> history, Map<Port, HashSet<Integer>> networkModel) {
         if (this.hasLoop) return;
         if (current == null) return; // reach to external
         if (predicates != null && predicates.isEmpty()) return;
         if (history.contains(current)) {
             this.hasLoop = true;
-            System.out.println(" found loop at: ");
             return;
         }
 

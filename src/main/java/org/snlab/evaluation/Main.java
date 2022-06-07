@@ -1,6 +1,7 @@
 package org.snlab.evaluation;
 
 import org.apache.commons.cli.ParseException;
+import org.snlab.flash.CE2D.Logger;
 
 public class Main {
     static public EvalOptions evalOptions = new EvalOptions();

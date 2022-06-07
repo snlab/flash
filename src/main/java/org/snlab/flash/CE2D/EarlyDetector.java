@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 
+import org.snlab.evaluation.I2CE2D;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
@@ -37,13 +38,17 @@ public class EarlyDetector {
     // }
 
     public void detectLoop(Setting setting, Network network, Set<Device> newClosed, Map<Port, HashSet<Integer>> model) {
+        this.detectLoop(setting, network, newClosed, model, null);
+    }
+
+    public void detectLoop(Setting setting, Network network, Set<Device> newClosed, Map<Port, HashSet<Integer>> model, Set<Integer> transfered) {
         this.closedDevices.addAll(newClosed);
         if (this.useSingleThread) {
-            LoopDetector ld = new LoopDetector(setting, network, Set.copyOf(this.closedDevices), newClosed, model);
+            LoopDetector ld = new LoopDetector(setting, network, Set.copyOf(this.closedDevices), newClosed, model, transfered);
             ld.run();
             this.hasLoop = ld.hasLoop;
         } else {
-            Runnable loopDetector = new LoopDetector(setting, network, Set.copyOf(this.closedDevices), newClosed, model);
+            Runnable loopDetector = new LoopDetector(setting, network, Set.copyOf(this.closedDevices), newClosed, model, transfered);
             new Thread(loopDetector).start();
         }
     }
@@ -66,14 +71,22 @@ class LoopDetector implements Runnable {
     private Setting setting;
     public boolean hasLoop = false;
     private Map<Port, HashSet<Integer>> model;
+    private Set<Integer> transfered;
 
+    
     public LoopDetector(Setting setting, Network network, Set<Device> closed, Set<Device> newClosed,
             Map<Port, HashSet<Integer>> model) {
+        this(setting, network, closed, newClosed, model, null);
+    }
+
+    public LoopDetector(Setting setting, Network network, Set<Device> closed, Set<Device> newClosed,
+            Map<Port, HashSet<Integer>> model, Set<Integer> transfered) {
         this.setting = setting;
         this.network = network;
         this.closed = closed;
         this.newClosed = newClosed;
         this.model = model;
+        this.transfered = transfered;
     }
 
     @Override
@@ -81,18 +94,18 @@ class LoopDetector implements Runnable {
         for (Device device : newClosed) {
             if (this.hasLoop)
                 return;
-            traverse(device, null, new HashSet<>(), model, closed); // null represents the universal set
+            traverse(device, transfered, new HashSet<>(), model, closed); // null represents the universal set
         }
     }
 
-    private void traverse(Device current, HashSet<Integer> predicates, HashSet<Device> history,
+    private void traverse(Device current, Set<Integer> predicates, HashSet<Device> history,
             Map<Port, HashSet<Integer>> networkModel, Set<Device> closed) {
         if (this.hasLoop)
             return;
         if (predicates != null && predicates.isEmpty())
             return;
         if (history.contains(current)) {
-            long edTime = (System.nanoTime() - setting.startAt);
+            long edTime = (System.nanoTime() - I2CE2D.startAt);
             int processedUpdates = this.network.getAllDevices().stream().filter(closed::contains)
                     .map(device -> device.getInitialRules().size()).collect(Collectors.toList()).stream()
                     .mapToInt(Integer::intValue).sum();

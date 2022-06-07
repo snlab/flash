@@ -23,6 +23,7 @@ public class EvalOptions {
     public String output;
 
     public String mode = "CE2D";
+    public String checkEpoch = "1"; // the target epoch for property check
 
     private CommandLineParser parser = new DefaultParser();
     private Options options = new Options();
@@ -39,7 +40,7 @@ public class EvalOptions {
         options.addOption("h", "help", false, "Print this message");
         options.addOption("debug", false, "Enable debug mode");
 
-        options.addOption("mode", true, "XXX mode");
+        options.addOption("mode", true, "Verification mode: PUV/BUV/CE2D");
     }
 
     public void showUsage() {
@@ -78,5 +79,6 @@ public class EvalOptions {
         if (c.hasOption("b")) {
             batchSize = Integer.valueOf(c.getOptionValue("b"));
         }
+        output = c.getOptionValue("o", "tmp/log.txt");
     }
 }
