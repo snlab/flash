@@ -1,4 +1,4 @@
-package org.snlab.table3;
+package org.snlab.evaluation.others;
 
 import java.util.*;
 

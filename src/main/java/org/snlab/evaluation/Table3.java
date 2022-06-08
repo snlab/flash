@@ -1,5 +1,8 @@
-package org.snlab.table3;
+package org.snlab.evaluation;
 
+import org.snlab.evaluation.others.APKeepVerifier;
+import org.snlab.evaluation.others.AtomVerifier;
+import org.snlab.evaluation.others.Checker;
 import org.snlab.flash.ModelManager.Ports.ArrayPorts;
 import org.snlab.flash.ModelManager.Ports.Ports;
 import org.snlab.flash.ModelManager.Ports.PersistentPorts;
@@ -8,7 +11,10 @@ import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
 import org.snlab.network.Rule;
+import org.snlab.networkLoader.Airtel1Network;
 import org.snlab.networkLoader.I2Network;
+import org.snlab.networkLoader.LNetNetwork;
+import org.snlab.networkLoader.StanfordNetwork;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,42 +31,44 @@ import java.util.HashSet;
  * 4. update event.
  */
 
-public class Main {
+public class Table3 {
     private static double memoryBefore, bytesToMega = 1024L * 1024L;
     private static boolean testDeletion = true;
 
     private static int warmup = 0, test = 1;
     private static double ratio;
 
-    public static void main(String[] args) throws IOException {
+    public static void run() {
         Network network;
 
         network = I2Network.getNetwork().setName("Internet2");
         evaluateOn(network);
 
-        /*
         network = StanfordNetwork.getNetwork().setName("Stanford");
-        process(network);
+        evaluateOn(network);
 
-        network = FBNetwork.getNetworkForDeltanet().setName("FBstar");
+        network = Airtel1Network.getNetwork().setName("Airtel1");
+        evaluateOn(network);
+
+        /*
+        network = LNetNetwork.LNetNetwork.getLNET1().setName("LNet*");
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         // network.filterIntoSubsapce(((1L << 8) + 1L) << 8, ((1L << 16) - 1) << 8); // for delta-net
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24); // for delta-net
-        process(network);
+        evaluateOn(network);
 
 
-        network = FBNetwork.getNetworkSrcHackMore().setName("FB1");
+        network = LNetNetwork.getNetworkSrcHackMore().setName("FB1");
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         // network.filterIntoSubsapce(((1L << 8) + 1L) << 16, ((1L << 16) - 1) << 16); // SrcHackMore
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24); // SrcHackMore
-        process(network);
+        evaluateOn(network);
 
-
-        network = FBNetwork.getNetwork().setName("FB");
+        network = LNetNetwork.getNetwork().setName("FB");
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         // network.filterIntoSubsapce(((1L << 8) + 1L) << 16, ((1L << 16) - 1) << 16); // SrcHackMore
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24); // SrcHackMore
-        process(network);
+        evaluateOn(network);
          */
 
         /*
@@ -71,7 +79,7 @@ public class Main {
          */
     }
 
-    public static void evaluateOn(Network network) throws IOException {
+    public static void evaluateOn(Network network) {
         System.gc();
         System.runFinalization();
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
@@ -79,7 +87,7 @@ public class Main {
         System.out.println("Memory usage (storing network): " + (memoryBefore / bytesToMega) + " M");
 
         // healthCheck(network);
-        // batchSize(network);
+        batchSize(network);
 
         ratio = 1000L * network.getInitialRules().size() * (testDeletion ? 2 : 1) * test;
 
@@ -139,7 +147,7 @@ public class Main {
         printWriter.close();
     }
 
-    private static void batchSize(Network network) throws IOException {
+    private static void batchSize(Network network) {
         double s;
 
         int tot = network.getInitialRules().size(), b = tot + 1, cnt = 0;
@@ -166,8 +174,14 @@ public class Main {
             }
             System.out.println("==================== Ended ==================== ");
 
-            FileWriter fileWriter = (size == 1) ? new FileWriter(network.getName() + "bPuUs.txt") :
-                    new FileWriter(network.getName() + "bPuUs.txt", true);
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = (size == 1) ? new FileWriter(network.getName() + "bPuUs.txt") :
+                        new FileWriter(network.getName() + "bPuUs.txt", true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            assert fileWriter != null;
             PrintWriter printWriter = new PrintWriter(fileWriter);
             printWriter.println(size + " " + (s / ratio));
             printWriter.close();
@@ -221,7 +235,7 @@ public class Main {
     private static double s1, s2, s3, s4, s5;
     private static double t1, t2, t3, t4, t5;
 
-    private static void overall(Network network) throws IOException {
+    private static void overall(Network network) {
         System.out.println("+++++++++++++++++++++ " + network.getName() + " +++++++++++++++++++++");
         s1 = s2 = s3 = s4 = s5 = 0;
         t1 = t2 = t3 = t4 = t5 = 0;
@@ -244,7 +258,13 @@ public class Main {
         for (int i = 0; i < test; i ++) s2 += apkeep(network, new ArrayPorts());
         System.out.println("==================== Ended ==================== ");
 
-        FileWriter fileWriter = new FileWriter("overall.txt", true);
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter("overall.txt", true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert fileWriter != null;
         PrintWriter printWriter = new PrintWriter(fileWriter);
         printWriter.println();
         printWriter.println();
