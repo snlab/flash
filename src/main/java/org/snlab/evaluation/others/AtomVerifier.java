@@ -243,13 +243,13 @@ public class AtomVerifier {
         }
 
         HashSet<Long> skip = new HashSet<>();
-        for (Long atom : atoms) if (atom != MAX) {
+        for (Long atom : atoms) if (!Objects.equals(atom, MAX)) {
             if (skip.contains(atom)) continue;
 
             skip.add(atom);
             ret += 1;
 
-            for (Long aPrime : atoms) if (aPrime != MAX) {
+            for (Long aPrime : atoms) if (!Objects.equals(aPrime, MAX)) {
                 if (skip.contains(aPrime)) continue;
                 if (checkEquivalence(atomToActions.get(atom), atomToActions.get(aPrime))) skip.add(aPrime);
             }

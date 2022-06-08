@@ -35,7 +35,7 @@ public class Airtel1Network {
             // defaultDevice.addPort(name + "-default");
             // n.addLink(name, name + "-default", "default", name + "-peer-default");
             try {
-                Scanner in = new Scanner(new File("airtel1/fib/" + name));
+                Scanner in = new Scanner(new File("dataset/airtel1/fib/" + name));
                 while (in.hasNextLine()) {
                     String line = in.nextLine();
                     String[] tokens = line.split(" ");

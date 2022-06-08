@@ -24,7 +24,7 @@ class Change {
 /**
  * Cite "APKeep: Realtime Verification for Real Networks"
  */
-public class APKeepVerifier {
+public class APVerifier {
     public final BDDEngine bddEngine;
     private final ArrayList<Change> changes;
     private final HashMap<Device, TrieRules> deviceToRules;
@@ -39,16 +39,16 @@ public class APKeepVerifier {
      * Initialize the Network Model with topology and default rules.
      * A network owns a model.
      */
-    public APKeepVerifier(Network network, Ports base) {
+    public APVerifier(Network network, Ports base) {
         this(network, new BDDEngine(32), base);
     }
 
-    public APKeepVerifier(Network network, int size, Ports base) {
+    public APVerifier(Network network, int size, Ports base) {
         this(network, new BDDEngine(size), base);
         this.size = size;
     }
 
-    public APKeepVerifier(Network network, BDDEngine bddEngine, Ports base) {
+    public APVerifier(Network network, BDDEngine bddEngine, Ports base) {
         this.bddEngine = bddEngine;
         this.changes = new ArrayList<>();
         this.portToPreds = new HashMap<>();
@@ -79,16 +79,17 @@ public class APKeepVerifier {
         rule.setHit(bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
         rule.setBddmatch(bddEngine.ref(rule.getHit()));
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
+
         for (Rule r : targetNode.getAllOverlappingWith(rule, size)) {
             if (r.getPriority() > rule.getPriority()) {
-                int newHit = bddEngine.diff(rule.getHit(), r.getHit());
+                int newHit = bddEngine.diff(rule.getHit(), r.getBddmatch());
                 bddEngine.deRef(rule.getHit());
                 rule.setHit(newHit);
             }
 
             if (rule.getHit() == BDDEngine.BDDFalse) break;
 
-            if (r.getPriority() < rule.getPriority()) {
+            if (r.getPriority() <= rule.getPriority() && r != rule) {
                 int intersection = bddEngine.and(r.getHit(), rule.getHit());
 
                 int newHit = bddEngine.diff(r.getHit(), intersection);
@@ -115,6 +116,8 @@ public class APKeepVerifier {
         sorted.sort(comp);
 
         for (Rule r : sorted) {
+            if (rule.getHit() == BDDEngine.BDDFalse) break;
+
             if (r.getPriority() < rule.getPriority()) {
                 int intersection = bddEngine.and(r.getBddmatch(), rule.getHit());
 
@@ -132,8 +135,6 @@ public class APKeepVerifier {
                     bddEngine.deRef(intersection);
                 }
             }
-
-            if (rule.getHit() == BDDEngine.BDDFalse) break;
         }
         targetNode.remove(rule, size);
         bddEngine.deRef(rule.getBddmatch());
@@ -143,7 +144,7 @@ public class APKeepVerifier {
 
     private HashSet<Integer> transferredPreds;
 
-    // merge predicates by default
+    // Eagerly merge predicates by default
     public HashSet<Integer> update() {
         return this.update(true);
     }
