@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.snlab.flash.Dispatcher;
 import org.snlab.flash.CE2D.EarlyDetector;
 import org.snlab.flash.CE2D.Setting;
 import org.snlab.flash.ModelManager.InverseModel;
@@ -30,6 +31,7 @@ public class I2LongTail {
                 InverseModel verifier = new InverseModel(network);
                 EarlyDetector earlyDetector = new EarlyDetector();
                 long startAt = System.nanoTime();
+                Dispatcher.logger.startAt = System.nanoTime();
                 for (Device device : remains) {
                     Changes changes = verifier.insertMiniBatch(device.getInitialRules());
                     verifier.update(changes);
