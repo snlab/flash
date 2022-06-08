@@ -24,7 +24,7 @@ class Change {
 /**
  * Cite "APKeep: Realtime Verification for Real Networks"
  */
-public class APKeepVerifier {
+public class APVerifier {
     public final BDDEngine bddEngine;
     private final ArrayList<Change> changes;
     private final HashMap<Device, TrieRules> deviceToRules;
@@ -39,16 +39,16 @@ public class APKeepVerifier {
      * Initialize the Network Model with topology and default rules.
      * A network owns a model.
      */
-    public APKeepVerifier(Network network, Ports base) {
+    public APVerifier(Network network, Ports base) {
         this(network, new BDDEngine(32), base);
     }
 
-    public APKeepVerifier(Network network, int size, Ports base) {
+    public APVerifier(Network network, int size, Ports base) {
         this(network, new BDDEngine(size), base);
         this.size = size;
     }
 
-    public APKeepVerifier(Network network, BDDEngine bddEngine, Ports base) {
+    public APVerifier(Network network, BDDEngine bddEngine, Ports base) {
         this.bddEngine = bddEngine;
         this.changes = new ArrayList<>();
         this.portToPreds = new HashMap<>();
@@ -143,7 +143,7 @@ public class APKeepVerifier {
 
     private HashSet<Integer> transferredPreds;
 
-    // merge predicates by default
+    // Eagerly merge predicates by default
     public HashSet<Integer> update() {
         return this.update(true);
     }

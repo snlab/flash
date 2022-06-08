@@ -1,0 +1,253 @@
+fw 0 8 self
+fw 171864064 20 te2/3.10
+fw 171929600 20 vlan209
+fw 2130706432 8 self
+fw 2457568066 32 te2/3.10
+fw 2873100800 23 te2/1.3
+fw 2873106432 21 te2/3.10
+fw 2873108480 22 te2/3.10
+fw 2873109504 23 te2/3.10
+fw 2873110272 25 te2/3.10
+fw 2873141248 21 te2/3.10
+fw 2873143296 22 vlan630
+fw 2873144320 24 te2/3.10
+fw 2873144576 25 te2/3.10
+fw 2873144704 25 vlan820
+fw 2873144832 23 te2/3.10
+fw 2873145344 21 te2/3.10
+fw 2873147392 24 te2/3.10
+fw 2873147904 23 te2/3.10
+fw 2873148416 23 te2/3.10
+fw 2873148928 23 vlan700
+fw 2873149440 23 vlan710
+fw 2873149952 23 te2/3.10
+fw 2873150464 23 te2/3.10
+fw 2873150976 24 te2/3.10
+fw 2873151232 25 te2/3.10
+fw 2873151360 26 te2/3.10
+fw 2873151488 21 te2/3.10
+fw 2873230560 27 self
+fw 2873264128 22 te2/3.10
+fw 2873293760 26 te2/3.10
+fw 2873294720 26 te2/1.3
+fw 2873295088 28 te2/1.3
+fw 2873332224 23 te2/3.10
+fw 2873346048 24 te2/3.10
+fw 2873346560 24 vlan202
+fw 2873346816 24 te2/3.10
+fw 2873351680 26 te2/3.10
+fw 2873351744 27 vlan860
+fw 2873351808 27 te2/3.10
+fw 2873351872 26 te2/3.10
+fw 2873351936 24 te2/3.10
+fw 2873353216 24 te2/3.10
+fw 2873353472 26 te2/3.10
+fw 2873353536 27 te2/3.10
+fw 2873353568 28 te2/3.10
+fw 2873353584 28 vlan990
+fw 2873353600 27 te2/3.10
+fw 2873353664 26 te2/3.10
+fw 2886746112 18 vlan16
+fw 2886991887 32 self
+fw 2886992098 32 self
+fw 2886992099 32 te2/3.10
+fw 2886993408 23 te2/1.3
+fw 2886994656 27 vlan10
+fw 2887014144 28 te2/3.10
+fw 2887254295 32 self
+fw 2887262208 22 te2/3.10
+fw 2887263232 24 te2/3.10
+fw 2887263744 23 te2/3.10
+fw 2887264256 24 te2/3.10
+fw 2887264768 23 te2/3.10
+fw 2887265280 23 te2/3.10
+fw 2887266048 25 te2/3.10
+fw 2887297024 24 te2/3.10
+fw 2887299072 24 vlan630
+fw 2887300096 24 te2/3.10
+fw 2887300352 25 te2/3.10
+fw 2887300480 25 vlan820
+fw 2887300608 23 te2/3.10
+fw 2887301120 24 te2/3.10
+fw 2887303168 24 te2/3.10
+fw 2887303680 24 te2/3.10
+fw 2887304192 23 te2/3.10
+fw 2887304704 24 vlan700
+fw 2887305216 24 vlan710
+fw 2887305728 24 te2/3.10
+fw 2887306240 23 te2/3.10
+fw 2887306752 24 te2/3.10
+fw 2887307008 25 te2/3.10
+fw 2887307136 26 te2/3.10
+fw 2887307264 23 te2/3.10
+fw 2887386360 29 vlan208
+fw 2887386336 27 self
+fw 2887419904 24 te2/3.10
+fw 2887488000 24 te2/3.10
+fw 2887501888 26 te2/3.10
+fw 2887501952 25 te2/3.10
+fw 2887502336 24 vlan202
+fw 2887502592 24 te2/3.10
+fw 2887507456 26 te2/3.10
+fw 2887507520 27 vlan860
+fw 2887507584 27 te2/3.10
+fw 2887507648 26 te2/3.10
+fw 2887507712 24 te2/3.10
+fw 2887508992 24 te2/3.10
+fw 2887509248 26 te2/3.10
+fw 2887509312 27 te2/3.10
+fw 2887509344 28 te2/3.10
+fw 2887509360 28 vlan990
+fw 2887509376 27 te2/3.10
+fw 2887509440 26 te2/3.10
+fw 3232235776 24 gi1/2
+fw 3232289080 30 te2/3.10
+fw 3232289084 30 vlan209
+fw 3232289248 30 tunnel10
+fw 3758096384 3 self
+fw 0 0 te3/1.2
+acl 199 vlan710 in
+vlanport vlan1117 te3/3 po35
+vlanport vlan660 te2/3 te3/3 te3/4
+vlanport vlan665 te2/3 te3/3 te3/4
+vlanport vlan820 te2/3 te3/3
+vlanport vlan770 te2/3 te3/3 te3/4
+vlanport vlan66 te2/3 te3/3
+vlanport vlan945 te2/3 te3/3 te3/4
+vlanport vlan940 te2/3 te3/3 te3/4
+vlanport vlan370 te2/3 te3/3 te3/4
+vlanport vlan1735 te3/3 po35
+vlanport vlan1716 te3/3 po35
+vlanport vlan690 te2/3 te3/3 te3/4
+vlanport vlan740 te2/3 te3/3 te3/4 gi4/3
+vlanport vlan810 te2/3 te3/3 te3/4
+vlanport vlan17 gi1/1
+vlanport vlan1729 te3/3 po35
+vlanport vlan10 te2/3 te2/4 te3/3
+vlanport vlan16 gi1/1
+vlanport vlan890 te2/3 te3/3 te3/4
+vlanport vlan1721 te3/3 po35
+vlanport vlan1126 te3/3 po35
+vlanport vlan1125 te3/3 po35
+vlanport vlan1124 te3/3 po35
+vlanport vlan950 te2/3 te3/3 te3/4
+vlanport vlan1122 te3/3 po35
+vlanport vlan1121 te3/3 po35
+vlanport vlan1726 te3/3 po35
+vlanport vlan1720 te3/3 po35
+vlanport vlan2703 te2/3 te3/3 te3/4
+vlanport vlan340 te2/3 te3/3 te3/4
+vlanport vlan1722 te3/3 po35
+vlanport vlan750 te2/3 te3/3 te3/4 gi4/3
+vlanport vlan1123 te3/3 po35
+vlanport vlan680 te2/3 te3/3 te3/4
+vlanport vlan450 te2/3 te3/3 te3/4
+vlanport vlan320 te2/3 te3/3 te3/4
+vlanport vlan1727 te3/3 po35
+vlanport vlan800 te2/3 te3/3 te3/4
+vlanport vlan1112 te3/3 po35
+vlanport vlan880 te2/3 te3/3
+vlanport vlan1111 te3/3 po35
+vlanport vlan1116 te3/3 po35
+vlanport vlan400 te2/3 te3/3 te3/4
+vlanport vlan1115 te3/3 po35
+vlanport vlan960 te2/3 te3/3 te3/4
+vlanport vlan1118 te3/3 po35
+vlanport vlan1119 te3/3 po35
+vlanport vlan199 te3/3
+vlanport vlan350 te2/3 te3/3 te3/4
+vlanport vlan720 te2/3 te3/3 te3/4
+vlanport vlan330 te2/3 te3/3 te3/4
+vlanport vlan678 te2/3 te3/3 te3/4
+vlanport vlan630 te2/3 te3/3
+vlanport vlan970 te2/3 te3/3 te3/4
+vlanport vlan1105 te3/3 po35
+vlanport vlan1104 te3/3 po35
+vlanport vlan1107 te3/3 po35
+vlanport vlan1106 te3/3 po35
+vlanport vlan1100 te3/3 po35
+vlanport vlan1103 te3/3 po35
+vlanport vlan1102 te3/3 po35
+vlanport vlan1109 te3/3 po35
+vlanport vlan1108 te3/3 po35
+vlanport vlan870 te2/3 te3/3
+vlanport vlan202 te2/3 te3/3
+vlanport vlan208 te2/3 te3/3
+vlanport vlan209 te3/3 gi4/47
+vlanport vlan730 te2/3 te3/3 te3/4
+vlanport vlan300 te2/3 te3/3 te3/4
+vlanport vlan380 te2/3 te3/3
+vlanport vlan1 te2/3 te3/3
+vlanport vlan2 te3/1
+vlanport vlan3 te2/1
+vlanport vlan620 te2/3 te3/3 te3/4
+vlanport vlan1736 te3/3 po35
+vlanport vlan1775 te3/3 po35
+vlanport vlan860 te2/3 te3/3
+vlanport vlan980 te2/3 te3/3
+vlanport vlan700 te2/3 te3/3
+vlanport vlan428 te2/3 te3/3 te3/4
+vlanport vlan429 te2/3 te3/3 te3/4
+vlanport vlan650 te2/3 te3/3 te3/4
+vlanport vlan420 te2/3 te3/3 te3/4
+vlanport vlan990 te2/3 te3/3
+vlanport vlan710 te2/3 te3/3
+vlanport vlan840 te2/3 te3/3 te3/4
+vlanport vlan640 te2/3 te3/3 te3/4
+vlanport vlan410 te2/3 te3/3 te3/4
+vlanport vlan645 te2/3 te3/3 te3/4
+vlanport vlan647 te2/3 te3/3 te3/4
+vlanport vlan2603 te2/3 te3/3 te3/4
+vlanport vlan1710 te3/3 po35
+vlanport vlan1711 te3/3 po35
+vlanport vlan1712 te3/3 po35
+vlanport vlan1713 te3/3 po35
+vlanport vlan1714 te3/3 po35
+vlanport vlan1715 te3/3 po35
+vlanport vlan310 te2/3 te3/3 te3/4
+vlanport vlan1718 te3/3 po35
+vlanport vlan1719 te3/3 po35
+vlanport vlan849 te2/3 te3/3 te3/4
+vlanport vlan675 te2/3 te3/3 te3/4
+vlanport vlan674 te2/3 te3/3 te3/4
+vlanport vlan677 te2/3 te3/3 te3/4
+vlanport vlan676 te2/3 te3/3 te3/4
+vlanport vlan670 te2/3 te3/3 te3/4
+vlanport vlan673 te2/3 te3/3 te3/4
+vlanport vlan672 te2/3 te3/3 te3/4
+vlanport vlan679 te2/3 te3/3 te3/4
+vlanport vlan1110 te3/3 po35
+vlanport vlan1724 te3/3 po35
+vlanport vlan830 te2/3 te3/3 te3/4
+vlanport vlan930 te2/3 te3/3 te3/4
+vlanport vlan760 te2/3 te3/3 te3/4
+vlanport vlan480 te2/3 te3/3
+vlanport vlan1702 te3/3 po35
+vlanport vlan360 te2/3 te3/3 te3/4
+vlanport vlan1707 te3/3 po35
+vlanport vlan1706 te3/3 po35
+vlanport vlan1704 te3/3 po35
+vlanport vlan1709 te3/3 po35
+vlanport vlan1708 te3/3 po35
+subnet vlan630 2887299075 8 vlan630
+subnet vlan630 2873143299 10 vlan630
+subnet vlan10 2886994658 5 vlan10
+subnet vlan202 2887502339 8 vlan202
+subnet vlan202 2873346563 8 vlan202
+subnet vlan990 2887509363 4 vlan990
+subnet vlan990 2873353587 4 vlan990
+subnet vlan16 2886748175 14 vlan16
+subnet vlan209 3232289085 2 vlan209
+subnet vlan208 2887386363 3 vlan208
+subnet vlan700 2887304707 8 vlan700
+subnet vlan700 2873149417 9 vlan700
+subnet vlan710 2887305219 8 vlan710
+subnet vlan710 2873149443 9 vlan710
+subnet vlan3 2886993634 9 te2/1
+subnet vlan3 2873294749 6 te2/1
+subnet vlan2 2886993122 9 te3/1
+subnet vlan2 2873163677 6 te3/1
+subnet vlan860 2887507523 5 vlan860
+subnet vlan860 2873351747 5 vlan860
+subnet vlan820 2887300483 7 vlan820
+subnet vlan820 2873144707 7 vlan820

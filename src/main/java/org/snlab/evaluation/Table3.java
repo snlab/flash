@@ -1,6 +1,6 @@
 package org.snlab.evaluation;
 
-import org.snlab.evaluation.others.APKeepVerifier;
+import org.snlab.evaluation.others.APVerifier;
 import org.snlab.evaluation.others.AtomVerifier;
 import org.snlab.evaluation.others.Checker;
 import org.snlab.flash.ModelManager.Ports.ArrayPorts;
@@ -13,7 +13,6 @@ import org.snlab.network.Port;
 import org.snlab.network.Rule;
 import org.snlab.networkLoader.Airtel1Network;
 import org.snlab.networkLoader.I2Network;
-import org.snlab.networkLoader.LNetNetwork;
 import org.snlab.networkLoader.StanfordNetwork;
 
 import java.io.FileWriter;
@@ -32,23 +31,17 @@ import java.util.HashSet;
  */
 
 public class Table3 {
-    private static double memoryBefore, bytesToMega = 1024L * 1024L;
-    private static boolean testDeletion = true;
+    private static final double byte2MB = 1024L * 1024L;
+    private static final boolean testDeletion = true;
+    private static final int warmup = 0, test = 1;
 
-    private static int warmup = 0, test = 1;
-    private static double ratio;
+    private static double memoryBefore, ratio;
 
     public static void run() {
-        Network network;
+        evaluateOn(I2Network.getNetwork().setName("Internet2"));
+        evaluateOn(StanfordNetwork.getNetwork().setName("Stanford"));
+        evaluateOn(Airtel1Network.getNetwork().setName("Airtel1"));
 
-        network = I2Network.getNetwork().setName("Internet2");
-        evaluateOn(network);
-
-        network = StanfordNetwork.getNetwork().setName("Stanford");
-        evaluateOn(network);
-
-        network = Airtel1Network.getNetwork().setName("Airtel1");
-        evaluateOn(network);
 
         /*
         network = LNetNetwork.LNetNetwork.getLNET1().setName("LNet*");
@@ -84,15 +77,15 @@ public class Table3 {
         System.runFinalization();
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println("Memory usage (storing network): " + (memoryBefore / bytesToMega) + " M");
+        System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
-        // healthCheck(network);
-        batchSize(network);
+        healthCheck(network);
 
         ratio = 1000L * network.getInitialRules().size() * (testDeletion ? 2 : 1) * test;
-
-        // checkAllPair(network);
         overall(network);
+
+        batchSize(network);
+        // checkAllPair(network);
     }
 
     private static void checkAllPair(Network network) throws IOException {
@@ -240,7 +233,6 @@ public class Table3 {
         s1 = s2 = s3 = s4 = s5 = 0;
         t1 = t2 = t3 = t4 = t5 = 0;
 
-
         for (int i = 0; i < warmup; i ++) seq(network, true);
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < test; i ++) s3 += seq(network, true);
@@ -284,48 +276,40 @@ public class Table3 {
     private static void printMemory() {
         System.gc();
         double memoryAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println("Memory usage (verification): " + ((memoryAfter - memoryBefore) / bytesToMega) + " M");
+        System.out.println("Memory usage (verification): " + ((memoryAfter - memoryBefore) / byte2MB) + " M");
     }
 
     private static void healthCheck(Network network) {
         System.gc();
 
-        APKeepVerifier apkeep = new APKeepVerifier(network, new ArrayPorts());
-        InverseModel jiffy = new InverseModel(network, new PersistentPorts());
+        APVerifier APVerifier = new APVerifier(network, new ArrayPorts());
+        InverseModel FIMT = new InverseModel(network, new PersistentPorts());
 
         int cnt = 0;
         for (Rule rule : network.getInitialRules()) {
             cnt ++;
 
-            /*
-            if (cnt == 869) {
-                System.out.println("Catch");
-            }
-             */
+            APVerifier.insertRule(new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort()));
+            APVerifier.update();
 
-            apkeep.insertRule(new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort()));
-            apkeep.update(true);
+            Changes changes = FIMT.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
+            FIMT.update(changes);
 
-            Changes changes = jiffy.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
-            jiffy.update(changes);
-
-            if (apkeep.predSize() != jiffy.predSize()) {
-                System.out.println("Error at " + cnt);
+            if (APVerifier.predSize() != FIMT.predSize()) {
+                System.out.println("Error at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
             }
         }
-
-
         for (Rule rule : network.getInitialRules()) {
             cnt ++;
 
-            apkeep.removeRule(new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort()));
-            apkeep.update(true);
+            APVerifier.removeRule(new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort()));
+            APVerifier.update();
 
-            Changes changes = jiffy.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
-            jiffy.update(changes);
+            Changes changes = FIMT.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
+            FIMT.update(changes);
 
-            if (apkeep.predSize() != jiffy.predSize()) {
-                System.out.println("Error at " + cnt);
+            if (APVerifier.predSize() != FIMT.predSize()) {
+                System.out.println("Error at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
             }
         }
     }
@@ -337,13 +321,13 @@ public class Table3 {
         for (Rule rule : network.getInitialRules()) {
             verifier.insertRule(rule);
         }
-        System.out.println("Delta-net #Atom: " + verifier.atomSize());
+        System.out.println("#Atom: " + verifier.atomSize());
         // System.out.println("Delta-net #EC: " + verifier.checkPECSize());
         if (testDeletion) {
             for (Rule rule : network.getInitialRules()) {
                 verifier.removeRule(rule);
             }
-            System.out.println("Delta-net #Atom: " + verifier.atomSize());
+            System.out.println("#Atom: " + verifier.atomSize());
             // System.out.println("Delta-net #EC: " + verifier.checkPECSize());
         }
         printMemory();
@@ -353,7 +337,7 @@ public class Table3 {
 
     private static double apkeep(Network network, Ports base) {
         System.gc();
-        APKeepVerifier verifier = new APKeepVerifier(network, base);
+        APVerifier verifier = new APVerifier(network, base);
         for (Rule rule : network.getInitialRules()) {
             verifier.insertRule(rule);
             verifier.update(true);

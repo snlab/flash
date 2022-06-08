@@ -39,9 +39,9 @@ public class ArrayPorts extends Ports {
     }
 
     @Override
-    public Ports change(Port change) {
+    public ArrayPorts change(Port change) {
+        this.hash ^= this.ports[uidToPos.get(change.getDevice().uid)].hashCode() ^ change.hashCode();
         this.ports[uidToPos.get(change.getDevice().uid)] = change;
-        this.hash ^= change.hashCode();
         return this;
     }
 
