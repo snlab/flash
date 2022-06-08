@@ -105,14 +105,25 @@ public class InverseModel {
                 int newHit = bddEngine.diff(rule.getHit(), r.getBddmatch());
                 bddEngine.deRef(rule.getHit());
                 rule.setHit(newHit);
+            }
 
-                if (rule.getHit() == BDDEngine.BDDFalse) break;
+            if (rule.getHit() == BDDEngine.BDDFalse) break;
+
+            if (r.getPriority() < rule.getPriority()) {
+                int intersection = bddEngine.and(r.getHit(), rule.getHit());
+
+                int newHit = bddEngine.diff(r.getHit(), intersection);
+                bddEngine.deRef(r.getHit());
+                r.setHit(newHit);
+
+                bddEngine.deRef(intersection);
             }
         }
 
         if (rule.getHit() != BDDEngine.BDDFalse) {
             s1 += System.nanoTime();
             s1to2 -= System.nanoTime();
+            bddEngine.ref(rule.getHit());
             ret.add(rule.getHit(), null, rule.getOutPort());
             s1to2 += System.nanoTime();
             s1 -= System.nanoTime();
@@ -121,25 +132,22 @@ public class InverseModel {
 
     private void identifyChangesDeletion(Rule rule, Changes ret) {
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
-        rule.setHit(bddEngine.ref(rule.getBddmatch()));
 
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
         sorted.sort(comp);
 
         for (Rule r : sorted) {
-            if (r.getPriority() > rule.getPriority()) {
-                int newHit = bddEngine.diff(rule.getHit(), r.getBddmatch());
-                bddEngine.deRef(rule.getHit());
-                rule.setHit(newHit);
-            }
-
             if (rule.getHit() == BDDEngine.BDDFalse) break;
 
             if (r.getPriority() < rule.getPriority()) {
                 int intersection = bddEngine.and(r.getBddmatch(), rule.getHit());
 
-                int newHit = bddEngine.diff(rule.getHit(), intersection);
+                int newHit = bddEngine.or(r.getHit(), intersection);
+                bddEngine.deRef(r.getHit());
+                r.setHit(newHit);
+
+                newHit = bddEngine.diff(rule.getHit(), intersection);
                 bddEngine.deRef(rule.getHit());
                 rule.setHit(newHit);
 
@@ -154,6 +162,7 @@ public class InverseModel {
                 }
             }
         }
+        targetNode.remove(rule, size);
         bddEngine.deRef(rule.getBddmatch());
         bddEngine.deRef(rule.getHit());
     }

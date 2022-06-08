@@ -79,16 +79,17 @@ public class APVerifier {
         rule.setHit(bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
         rule.setBddmatch(bddEngine.ref(rule.getHit()));
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
+
         for (Rule r : targetNode.getAllOverlappingWith(rule, size)) {
             if (r.getPriority() > rule.getPriority()) {
-                int newHit = bddEngine.diff(rule.getHit(), r.getHit());
+                int newHit = bddEngine.diff(rule.getHit(), r.getBddmatch());
                 bddEngine.deRef(rule.getHit());
                 rule.setHit(newHit);
             }
 
             if (rule.getHit() == BDDEngine.BDDFalse) break;
 
-            if (r.getPriority() < rule.getPriority()) {
+            if (r.getPriority() <= rule.getPriority()) {
                 int intersection = bddEngine.and(r.getHit(), rule.getHit());
 
                 int newHit = bddEngine.diff(r.getHit(), intersection);
@@ -115,6 +116,8 @@ public class APVerifier {
         sorted.sort(comp);
 
         for (Rule r : sorted) {
+            if (rule.getHit() == BDDEngine.BDDFalse) break;
+
             if (r.getPriority() < rule.getPriority()) {
                 int intersection = bddEngine.and(r.getBddmatch(), rule.getHit());
 
@@ -132,8 +135,6 @@ public class APVerifier {
                     bddEngine.deRef(intersection);
                 }
             }
-
-            if (rule.getHit() == BDDEngine.BDDFalse) break;
         }
         targetNode.remove(rule, size);
         bddEngine.deRef(rule.getBddmatch());

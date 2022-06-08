@@ -280,37 +280,59 @@ public class Table3 {
     }
 
     private static void healthCheck(Network network) {
+        // For every snapshot, APVerifier and FIMT should generate the same number of ECs.
+        // The #Atom can be larger. But with minimization, it should be equal to #ECs.
+        // (Notice the minimization is expensive, we only use it in health-check)
         System.gc();
 
         APVerifier APVerifier = new APVerifier(network, new ArrayPorts());
         InverseModel FIMT = new InverseModel(network, new PersistentPorts());
+        AtomVerifier AtomVerifier = new AtomVerifier();
 
         int cnt = 0;
+        Rule rulePrime;
+        ArrayList<Rule> ruleList1 = new ArrayList<>(), ruleList2 = new ArrayList<>();
         for (Rule rule : network.getInitialRules()) {
             cnt ++;
 
-            APVerifier.insertRule(new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort()));
+            rulePrime = new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort());
+            ruleList1.add(rulePrime);
+            APVerifier.insertRule(rulePrime);
             APVerifier.update();
+
+            rulePrime = new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort());
+            ruleList2.add(rulePrime);
+            AtomVerifier.insertRule(rulePrime);
 
             Changes changes = FIMT.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
             FIMT.update(changes);
 
             if (APVerifier.predSize() != FIMT.predSize()) {
-                System.out.println("Error at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
+                System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
             }
         }
+        System.out.println(AtomVerifier.checkPECSize());
+        if (AtomVerifier.checkPECSize() != APVerifier.predSize()) {
+            System.out.println("Something wrong about AtomVerifier");
+        }
+        int p1 = 0, p2 = 0;
         for (Rule rule : network.getInitialRules()) {
             cnt ++;
 
-            APVerifier.removeRule(new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort()));
+            APVerifier.removeRule(ruleList1.get(p1 ++));
             APVerifier.update();
+
+            AtomVerifier.removeRule(ruleList2.get(p2 ++));
 
             Changes changes = FIMT.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
             FIMT.update(changes);
 
             if (APVerifier.predSize() != FIMT.predSize()) {
-                System.out.println("Error at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
+                System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
             }
+        }
+        if (AtomVerifier.checkPECSize() != APVerifier.predSize()) {
+            System.out.println("Something wrong about AtomVerifier");
         }
     }
 
@@ -322,13 +344,11 @@ public class Table3 {
             verifier.insertRule(rule);
         }
         System.out.println("#Atom: " + verifier.atomSize());
-        // System.out.println("Delta-net #EC: " + verifier.checkPECSize());
         if (testDeletion) {
             for (Rule rule : network.getInitialRules()) {
                 verifier.removeRule(rule);
             }
             System.out.println("#Atom: " + verifier.atomSize());
-            // System.out.println("Delta-net #EC: " + verifier.checkPECSize());
         }
         printMemory();
         t1 += verifier.opCnt;
