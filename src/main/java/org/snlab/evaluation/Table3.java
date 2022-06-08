@@ -311,7 +311,6 @@ public class Table3 {
                 System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
             }
         }
-        System.out.println(AtomVerifier.checkPECSize());
         if (AtomVerifier.checkPECSize() != APVerifier.predSize()) {
             System.out.println("Something wrong about AtomVerifier");
         }
