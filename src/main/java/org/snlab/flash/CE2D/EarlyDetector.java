@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Sets;
 
 import org.snlab.evaluation.I2CE2D;
+import org.snlab.flash.Dispatcher;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
@@ -105,17 +106,17 @@ class LoopDetector implements Runnable {
         if (predicates != null && predicates.isEmpty())
             return;
         if (history.contains(current)) {
-            long edTime = (System.nanoTime() - I2CE2D.startAt);
+            long edTime = (System.nanoTime() - Dispatcher.logger.startAt);
             int processedUpdates = this.network.getAllDevices().stream().filter(closed::contains)
                     .map(device -> device.getInitialRules().size()).collect(Collectors.toList()).stream()
                     .mapToInt(Integer::intValue).sum();
                     
             if (!this.hasLoop) {
                 this.hasLoop = true;
-                System.out.println(setting + " found loop at: " + edTime + " #closed: " + closed.size() + " #updates: "
+                Dispatcher.logger.logPrintln(setting + " found loop at: " + edTime + " #closed: " + closed.size() + " #updates: "
                         + processedUpdates);
             }
-            Thread.currentThread().interrupt();
+            // Thread.currentThread().interrupt();
             return;
         }
 

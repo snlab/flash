@@ -2,11 +2,14 @@ package org.snlab.evaluation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.DelayQueue;
 
+import org.snlab.flash.Dispatcher;
 import org.snlab.flash.CE2D.EarlyDetector;
 import org.snlab.flash.CE2D.Setting;
 import org.snlab.flash.ModelManager.Changes;
@@ -14,6 +17,7 @@ import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Rule;
+import org.snlab.network.Update.Type;
 import org.snlab.networkLoader.I2Network;
 
 public class I2EarlyDetection {
@@ -25,13 +29,13 @@ public class I2EarlyDetection {
             while (in.hasNextLine()) {
                 String line = in.nextLine();
                 String[] tokens = line.split(" ");
-                Device device = network.getDevice(tokens[1]);
-                String pn = tokens[4].split("\\.")[0];
+                Device device = network.getDevice(tokens[3]);
+                String pn = tokens[6].split("\\.")[0];
                 if (device.getPort(pn) == null) {
                     device.addPort(pn);
                 }
-                long ip = Long.parseLong(tokens[2]);
-                Rule rule = new Rule(device, ip, Integer.parseInt(tokens[3]), device.getPort(pn));
+                long ip = Long.parseLong(tokens[4]);
+                Rule rule = new Rule(device, ip, Integer.parseInt(tokens[5]), device.getPort(pn));
                 rules.add(rule);
                 network.addInitialRule(rule);
                 device.addInitialRule(rule);
@@ -40,47 +44,96 @@ public class I2EarlyDetection {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 100; i++) {
             /**
              * Must reload rules each run, else buggy rules always exist
              */
             network = I2Network.getTopo();
-
-            for (Rule rule : rules) {
-                Device device = network.getDevice(rule.getDevice().getName());
-                Rule r = new Rule(device, rule.getMatch().longValue(), rule.getPrefix(), device.getPort(rule.getOutPort().getName()));
-                network.addInitialRule(r);
-                device.addInitialRule(r);
-            }
+            List<UpdateTrace> updates = loadUpdates(network);
             
-            InverseModel model = new InverseModel(network);
-            EarlyDetector earlyDetector = new EarlyDetector();
-            earlyDetector.useSingleThread = true;
-            long startAt = System.nanoTime();
+            DelayQueue<UpdateTrace> dq = new DelayQueue<>();
+            dq.addAll(updates);
+    
+            Main.evalOptions.mode = "CE2D";
+            Dispatcher dispatcher = new Dispatcher(network, 10);
+            Dispatcher.logger.startAt = System.nanoTime();
+    
             Device buggyDevice = network.getAllDevices().stream()
                     .skip((int) (network.getAllDevices().size() * Math.random())).findFirst().get();
-            System.out.println("buggy device: " + buggyDevice.getName());
-            
-            for (Device device : network.getAllDevices()) {
-                if (device == buggyDevice) {
-                    // Rule buggyRule =
-                    // device.getInitialRules().stream().skip((int)(device.getInitialRules().size()
-                    // * Math.random())).findFirst().get();
-                    // buggyRule.setRandomOutPort();
-                    for (Rule rule : device.getInitialRules()) {
-                        rule.setRandomOutPort();
+            Device longTailDevice = network.getAllDevices().stream()
+                    .skip((int) (network.getAllDevices().size() * Math.random())).findFirst().get();
+            Dispatcher.logger.logPrintln("=== buggy device: " + buggyDevice.getName() + "; long tail device: " + longTailDevice.getName() + "===");
+
+            while (!dq.isEmpty()) {
+                try {
+                    UpdateTrace update = dq.take();
+                    
+                    if (update.getDevice() == longTailDevice) {
+                        // continue;
                     }
-                }
-                Changes changes = model.insertMiniBatch(device.getInitialRules());
-                model.update(changes);
-                Setting setting = new Setting(0, 0, startAt);
-                Set<Device> newClosed = new HashSet<>();
-                newClosed.add(device);
-                earlyDetector.detectLoop(setting, network, newClosed, model.getPortToPredicate());
-                if (earlyDetector.hasLoop()) {
-                    break;
+                    if (update.getDevice() == buggyDevice) {
+                        update.getRule().setRandomOutPort();
+                    }
+                    dispatcher.dispatch(update);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
+        Dispatcher.logger.writeFile();
+    }
+
+    private static List<UpdateTrace> loadUpdates(Network network) {
+        List<UpdateTrace> trace = new ArrayList<>();
+
+        try {
+            Scanner in = new Scanner(new File("dataset/I2OpenR/trace.txt"));
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                String[] tokens = line.split(" ");
+                Device device = network.getDevice(tokens[3]);
+                String pn = tokens[6].split("\\.")[0];
+                if (device.getPort(pn) == null) {
+                    device.addPort(pn);
+                }
+                long ip = Long.parseLong(tokens[4]);
+                Rule rule = new Rule(device, ip, Integer.parseInt(tokens[5]), device.getPort(pn));
+                device.addInitialRule(rule);
+                network.addInitialRule(rule);
+                UpdateTrace ut = new UpdateTrace(Type.INSERT, device, rule, Integer.valueOf(tokens[1]));
+                ut.setEpoch(tokens[2]);
+                if (tokens[7].equals("1")) { // the last update
+                    ut.setIsLast(true);
+                }
+                trace.add(ut);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Scanner in = new Scanner(new File("dataset/I2OpenR/update.txt"));
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                String[] tokens = line.split(" ");
+                Device device = network.getDevice(tokens[3]);
+                String pn = tokens[6].split("\\.")[0];
+                if (device.getPort(pn) == null) {
+                    device.addPort(pn);
+                }
+                long ip = Long.parseLong(tokens[4]);
+                Rule rule = new Rule(device, ip, Integer.parseInt(tokens[5]), device.getPort(pn));
+                Type type = tokens[0].equals("+") ? Type.INSERT : Type.DELETE;
+                UpdateTrace update = new UpdateTrace(type, device, rule, Integer.valueOf(tokens[1]));
+                update.setEpoch(tokens[2]);
+                if (tokens[7].equals("1")) { // the last update
+                    update.setIsLast(true);
+                }
+                trace.add(update);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return trace;
     }
 }
