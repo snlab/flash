@@ -109,7 +109,7 @@ public class InverseModel {
 
             if (rule.getHit() == BDDEngine.BDDFalse) break;
 
-            if (r.getPriority() < rule.getPriority()) {
+            if (r.getPriority() <= rule.getPriority() && r != rule) {
                 int intersection = bddEngine.and(r.getHit(), rule.getHit());
 
                 int newHit = bddEngine.diff(r.getHit(), intersection);
