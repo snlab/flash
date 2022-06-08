@@ -31,7 +31,7 @@ public class I2LongTail {
                 InverseModel verifier = new InverseModel(network);
                 EarlyDetector earlyDetector = new EarlyDetector();
                 long startAt = System.nanoTime();
-                Dispatcher.logger.startAt = System.nanoTime();
+                
                 for (Device device : remains) {
                     Changes changes = verifier.insertMiniBatch(device.getInitialRules());
                     verifier.update(changes);
@@ -39,9 +39,8 @@ public class I2LongTail {
                     earlyDetector.detectLoop(setting, network, new HashSet<>(Arrays.asList(device)),
                             verifier.getPortToPredicate());
                 }
-                System.gc();
-
             }
         }
+        Dispatcher.logger.writeFile();
     }
 }

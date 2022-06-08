@@ -106,7 +106,7 @@ class LoopDetector implements Runnable {
         if (predicates != null && predicates.isEmpty())
             return;
         if (history.contains(current)) {
-            long edTime = (System.nanoTime() - Dispatcher.logger.startAt);
+            long edTime = (System.nanoTime() - (setting.startAt == 0 ? Dispatcher.logger.startAt : setting.startAt));
             int processedUpdates = this.network.getAllDevices().stream().filter(closed::contains)
                     .map(device -> device.getInitialRules().size()).collect(Collectors.toList()).stream()
                     .mapToInt(Integer::intValue).sum();

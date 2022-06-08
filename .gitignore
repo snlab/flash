@@ -3,3 +3,4 @@ target/
 sigcomm22-eval
 TODO.md
 tmp/
+__pycache__

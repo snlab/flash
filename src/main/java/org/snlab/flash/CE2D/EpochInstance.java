@@ -70,7 +70,7 @@ public class EpochInstance {
                     }
                 }
             } else {
-                Setting setting = new Setting(0, 0, System.nanoTime());
+                Setting setting = new Setting(0, 0, 0);
                 Set<Device> newClosed = new HashSet<>();
                 for (Update update : updates) {
                     if (update.isIsLast()) {
