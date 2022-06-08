@@ -1,4 +1,4 @@
-package org.snlab.table3;
+package org.snlab.evaluation.others;
 
 import org.jgrapht.alg.util.Pair;
 import org.snlab.network.Device;
@@ -46,7 +46,7 @@ public class AtomVerifier {
     }
 
 
-    private long suffix = 1L << 8;
+    private long suffix = 1L << 8; // FIXME the suffix hack is a little bit tricky
 
     /**
      * The half-closed interval previously represented by a needs to
@@ -119,7 +119,7 @@ public class AtomVerifier {
 
             Long a = aToPrime.getFirst(), aPrim = aToPrime.getSecond();
             sports -= System.nanoTime();
-            owner.put(aPrim, deepClone(owner.get(a))); // WARNING: this is a deep clone
+            owner.put(aPrim, deepClone(owner.get(a))); // WARNING: this must be a deep clone
             sports += System.nanoTime();
             for (TreeMap<Integer, Rule> bst : owner.get(a).values()) { // assert bst != null
                 Rule rPrime = bst.lastEntry().getValue();
@@ -176,7 +176,7 @@ public class AtomVerifier {
                 }
             }
 
-            /* FIXME remove empty atoms*/
+            // remove empty atoms
             if (bst.isEmpty()) {
                 owner.get(a).remove(r.getDevice());
                 if (owner.get(a).isEmpty()) {

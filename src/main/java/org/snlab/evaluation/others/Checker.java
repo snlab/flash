@@ -1,4 +1,4 @@
-package org.snlab.table3;
+package org.snlab.evaluation.others;
 
 import org.snlab.network.Device;
 import org.snlab.network.Network;
