@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 class I2EarlyDetection:
-    def __init__(self) -> None:
+    def __init__(self, output=None) -> None:
         x = []
         with open('tmp/log.txt') as f:
             lines = f.readlines()
@@ -22,4 +22,7 @@ class I2EarlyDetection:
         plt.xlim(0, 160)
         sns.ecdfplot(x)
         plt.grid()
-        plt.show()
+        if output:
+            plt.savefig(output)
+        else:
+            plt.show()

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 class I2LongTail:
-    def __init__(self) -> None:
+    def __init__(self, output=None) -> None:
         data = {}
         for i in range(1, 8):
             data[i] = {}
@@ -30,7 +30,10 @@ class I2LongTail:
         sns.ecdfplot(pdata)
         
         plt.grid()
-        plt.show()
+        if output:
+            plt.savefig(output)
+        else:
+            plt.show()
         plt.close()
 
         plt.figure(figsize=(8, 4))
@@ -41,6 +44,9 @@ class I2LongTail:
                 pdata[k] = d.values()
         sns.ecdfplot(pdata)
         plt.grid()
-        plt.show()
+        if output:
+            plt.savefig(output)
+        else:
+            plt.show()
 
         

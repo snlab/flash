@@ -13,6 +13,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.snlab.flash.Dispatcher;
 import org.snlab.flash.ModelManager.BDDEngine;
 import org.snlab.flash.ModelManager.Ports.Ports;
 import org.snlab.network.Device;
@@ -72,7 +73,7 @@ public class AllPairChecker {
                 foundBug = true;
             }
             
-            System.out.println("$allpair: " + (System.nanoTime() - s));
+            Dispatcher.logger.logPrintln("$allpair: " + (System.nanoTime() - s));
         }
     }
 
@@ -139,14 +140,6 @@ public class AllPairChecker {
             }
         }
         return graph;
-    }
-
-    public class PGEdge extends DefaultEdge {
-        public Port port;
-    
-        public PGEdge(Port port) {
-            this.port = port;
-        }
     }
     
 }
