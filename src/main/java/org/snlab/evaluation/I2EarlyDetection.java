@@ -2,18 +2,11 @@ package org.snlab.evaluation;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.DelayQueue;
 
 import org.snlab.flash.Dispatcher;
-import org.snlab.flash.CE2D.EarlyDetector;
-import org.snlab.flash.CE2D.Setting;
-import org.snlab.flash.ModelManager.Changes;
-import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Rule;

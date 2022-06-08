@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.snlab.flash.Dispatcher;

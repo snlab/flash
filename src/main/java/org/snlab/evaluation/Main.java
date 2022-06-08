@@ -1,9 +1,6 @@
 package org.snlab.evaluation;
 
 import org.apache.commons.cli.ParseException;
-import org.snlab.flash.CE2D.Logger;
-
-import java.io.IOException;
 
 public class Main {
     static public EvalOptions evalOptions = new EvalOptions();
@@ -18,7 +15,7 @@ public class Main {
             }
             System.exit(1);
         }
-        
+
         Runner.run();
     }
 }

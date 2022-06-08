@@ -1,7 +1,5 @@
 package org.snlab.evaluation;
 
-import java.io.IOException;
-
 public class Runner {
 
     static public void run() {
@@ -16,7 +14,7 @@ public class Runner {
         }
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         Table3.run();
     }
 }

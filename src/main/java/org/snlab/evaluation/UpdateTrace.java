@@ -8,7 +8,6 @@ import org.snlab.network.Rule;
 import org.snlab.network.Update;
 
 public class UpdateTrace extends Update implements Delayed {
-    private long delay;
     private long until;
     private static int order = 0;
     private int order_;
