@@ -18,11 +18,11 @@ public class I2CE2D {
     public static long startAt;
 
     public static void run() {
-        System.out.println("=== Start running using BUV ===");
+        Dispatcher.logger.logPrintln("=== Start running using BUV ===");
         runBUV();
-        System.out.println("=== Start running using PUV ===");
+        Dispatcher.logger.logPrintln("=== Start running using PUV ===");
         runPUV();
-        System.out.println("=== Start running using CE2D ===");
+        Dispatcher.logger.logPrintln("=== Start running using CE2D ===");
         runCE2D();
         Dispatcher.logger.writeFile();
     }

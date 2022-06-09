@@ -1,8 +1,10 @@
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 class I2LongTail:
     def __init__(self, output=None) -> None:
+        os.system('mvn exec:java -Dexec.args="-e I2LongTail"')
         data = {}
         for i in range(1, 8):
             data[i] = {}

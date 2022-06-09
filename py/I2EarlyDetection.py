@@ -1,8 +1,10 @@
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 class I2EarlyDetection:
     def __init__(self, output=None) -> None:
+        os.system('mvn exec:java -Dexec.args="-e I2EarlyDetection"')
         x = []
         with open('tmp/log.txt') as f:
             lines = f.readlines()

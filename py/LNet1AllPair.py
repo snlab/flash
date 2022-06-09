@@ -1,8 +1,10 @@
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 class LNet1AllPair:
     def __init__(self, output=None) -> None:
+        os.system('mvn exec:exec -Dexec.args="-e LNet1AllPair"')
         x = []
         for line in open('tmp/log.txt'):
             if 'time' in line:

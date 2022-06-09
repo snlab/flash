@@ -116,7 +116,7 @@ public class InverseModel {
                 bddEngine.deRef(r.getHit());
                 r.setHit(newHit);
 
-                bddEngine.deRef(intersection);
+                // bddEngine.deRef(intersection);
             }
         }
 
