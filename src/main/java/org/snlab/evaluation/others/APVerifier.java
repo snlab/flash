@@ -92,7 +92,7 @@ public class APVerifier {
 
             if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
 
-            if (r.getPriority() <= rule.getPriority() && !r.equals(rule)) {
+            if (r.getPriority() < rule.getPriority()) {
                 int intersection = bddEngine.and(ruleToHits.get(r), ruleToHits.get(rule));
 
                 int newHit = bddEngine.diff(ruleToHits.get(r), intersection);
@@ -121,7 +121,7 @@ public class APVerifier {
         for (Rule r : sorted) {
             if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
 
-            if (r.getPriority() < rule.getPriority()) {
+            if (r.getPriority() <= rule.getPriority() && !r.equals(rule)) {
                 int intersection = bddEngine.and(ruleToBddMatch.get(r), ruleToHits.get(rule));
 
                 int newHit = bddEngine.or(ruleToHits.get(r), intersection);

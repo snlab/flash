@@ -79,12 +79,8 @@ public class Table3 {
         memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
-        healthCheck(network);
-
         ratio = 1000L * network.getInitialRules().size() * (testDeletion ? 2 : 1) * test;
         overall(network);
-
-        // batchSize(network);
         // checkAllPair(network);
     }
 
@@ -140,95 +136,24 @@ public class Table3 {
         printWriter.close();
     }
 
-    private static void batchSize(Network network) {
-        double s;
-
-        int tot = network.getInitialRules().size(), b = tot + 1, cnt = 0;
-        for (int size = 1; size <= tot; size ++) {
-            s = 0;
-
-            /*
-            if ((tot / size) < b) {
-                b = tot / size;
-                cnt ++;
-            } else {
-                continue;
-            }
-             */
-
-            if (size > 100 && size != tot) continue;
-
-            System.out.println("==================== Size " + size + " ==================== ");
-            for (int i = 0; i < warmup; i ++) testWithBatchSize(network, size);
-            System.out.println("==================== Loaded ==================== ");
-            for (int i = 0; i < test; i ++) {
-                s += testWithBatchSize(network, size);
-                System.gc();
-            }
-            System.out.println("==================== Ended ==================== ");
-
-            FileWriter fileWriter = null;
-            try {
-                fileWriter = (size == 1) ? new FileWriter(network.getName() + "bPuUs.txt") :
-                        new FileWriter(network.getName() + "bPuUs.txt", true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            assert fileWriter != null;
-            PrintWriter printWriter = new PrintWriter(fileWriter);
-            printWriter.println(size + " " + (s / ratio));
-            printWriter.close();
-        }
-    }
-
-    private static double testWithBatchSize(Network network, int size) {
-        System.gc();
-
-        InverseModel verifier = new InverseModel (network, new PersistentPorts());
-        ArrayList<Rule> rules = new ArrayList<>();
-
-        int cnt = 0;
-        for (Rule rule : network.getInitialRules()) {
-            rules.add(rule);
-            cnt ++;
-            if (cnt % size == 0) {
-                Changes changes = verifier.insertMiniBatch(rules);
-                verifier.update(changes);
-                rules.clear();
-            }
-        }
-        if (rules.size() > 0) {
-            Changes changes = verifier.insertMiniBatch(rules);
-            verifier.update(changes);
-            rules.clear();
-        }
-        if (testDeletion) {
-            cnt = 0;
-            System.out.println("Jiffy #EC: " + verifier.predSize());
-            for (Rule rule : network.getInitialRules()) {
-                rules.add(rule);
-                cnt ++;
-                if (cnt % size == 0) {
-                    Changes changes = verifier.miniBatch(new ArrayList<>(), rules);
-                    verifier.update(changes);
-                    rules.clear();
-                }
-            }
-            if (rules.size() > 0) {
-                Changes changes = verifier.miniBatch(new ArrayList<>(), rules);
-                verifier.update(changes);
-                rules.clear();
-            }
-        }
-        System.out.println("Jiffy #EC: " + verifier.predSize());
-        printMemory();
-        return verifier.printTime(network.getInitialRules().size());
-    }
-
     private static double s1, s2, s3, s4, s5;
     private static double t1, t2, t3, t4, t5;
 
-    private static void overall(Network network) {
+    private static void overall(Network network) { // Table 3
+        /*
+        String[] options = {"APKeep*", "Deltanet*", "Flash"};
+
+        for (String verifier : options) {
+            for (int i = 0; i < warmup; i ++) { // warmup
+
+            }
+            for (int i = 0; i < test; i ++) {
+
+            }
+        }
+         */
+
+
         System.out.println("+++++++++++++++++++++ " + network.getName() + " +++++++++++++++++++++");
         s1 = s2 = s3 = s4 = s5 = 0;
         t1 = t2 = t3 = t4 = t5 = 0;
@@ -277,55 +202,6 @@ public class Table3 {
         System.gc();
         double memoryAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Memory usage (verification): " + ((memoryAfter - memoryBefore) / byte2MB) + " M");
-    }
-
-    private static void healthCheck(Network network) {
-        // For every snapshot, APVerifier and FIMT should generate the same number of ECs.
-        // The #Atom can be larger. But with minimization, it should be equal to #ECs.
-        // (Notice the minimization is expensive, we only use it in health-check)
-        System.gc();
-
-        APVerifier APVerifier = new APVerifier(network, new ArrayPorts());
-        InverseModel FIMT = new InverseModel(network, new PersistentPorts());
-        AtomVerifier AtomVerifier = new AtomVerifier();
-
-        int cnt = 0;
-        for (Rule rule : network.getInitialRules()) {
-            cnt ++;
-
-            APVerifier.insertRule(rule);
-            APVerifier.update();
-
-            AtomVerifier.insertRule(rule);
-
-            Changes changes = FIMT.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
-            FIMT.update(changes);
-
-            if (APVerifier.predSize() != FIMT.predSize()) {
-                System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
-            }
-        }
-        if (AtomVerifier.checkPECSize() != APVerifier.predSize()) {
-            System.out.println("Something wrong about AtomVerifier");
-        }
-        for (Rule rule : network.getInitialRules()) {
-            cnt ++;
-
-            APVerifier.removeRule(rule);
-            APVerifier.update();
-
-            AtomVerifier.removeRule(rule);
-
-            Changes changes = FIMT.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
-            FIMT.update(changes);
-
-            if (APVerifier.predSize() != FIMT.predSize()) {
-                System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
-            }
-        }
-        if (AtomVerifier.checkPECSize() != APVerifier.predSize()) {
-            System.out.println("Something wrong about AtomVerifier");
-        }
     }
 
     private static double deltanet(Network network) {

@@ -14,7 +14,7 @@ public class InverseModel {
     public final BDDEngine bddEngine;
     private int size = 32; // length of packet header
 
-    private final HashMap<Rule, Integer> ruleToHits, ruleToBddMatch;
+    private final HashMap<Rule, Integer> ruleToBddMatch;
     private final HashMap<Device, TrieRules> deviceToRules; // FIB snapshots
     public HashMap<Ports, Integer> portsToPredicate; // network inverse model
 
@@ -41,7 +41,6 @@ public class InverseModel {
     public InverseModel(Network network, BDDEngine bddEngine, Ports base) {
         this.bddEngine = bddEngine;
         this.deviceToRules = new HashMap<>();
-        this.ruleToHits = new HashMap<>();
         this.ruleToBddMatch = new HashMap<>();
 
         // Relabel every device as the index used by Ports, starting from 0
@@ -54,7 +53,6 @@ public class InverseModel {
             key.add(p);
             Rule rule = new Rule(device, 0, 0, -1, p);
             ruleToBddMatch.put(rule, BDDEngine.BDDTrue);
-            ruleToHits.put(rule, bddEngine.ref(BDDEngine.BDDTrue));
             deviceToRules.get(device).insert(rule, size);
         }
 
@@ -84,7 +82,6 @@ public class InverseModel {
             }
             inserted.add(rule);
             ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
-            ruleToHits.put(rule, bddEngine.ref(ruleToBddMatch.get(rule)));
             deviceToRules.get(rule.getDevice()).insert(rule, size);
         }
         for (Rule rule : deleted) deviceToRules.get(rule.getDevice()).remove(rule, size);
@@ -96,57 +93,51 @@ public class InverseModel {
         return ret;
     }
 
+    private int getHit(Rule rule) {
+        int hit = bddEngine.ref(ruleToBddMatch.get(rule));
+        for (Rule r : deviceToRules.get(rule.getDevice()).getAllOverlappingWith(rule, size)) {
+            if (r.getPriority() >= rule.getPriority() && !r.equals(rule)) {
+                int newHit = bddEngine.diff(hit, ruleToBddMatch.get(r));
+                bddEngine.deRef(hit);
+                hit = newHit;
+            }
+
+            if (hit == BDDEngine.BDDFalse) break;
+        }
+        return hit;
+    }
+
     /**
      * @param rule an inserted rule
      * @param ret  the pointer to the value returned by this function
      */
     private void identifyChangesInsert(Rule rule, Changes ret) {
-        for (Rule r : deviceToRules.get(rule.getDevice()).getAllOverlappingWith(rule, size)) {
-            if (r.getPriority() > rule.getPriority()) {
-                int newHit = bddEngine.diff(ruleToHits.get(rule), ruleToBddMatch.get(r));
-                bddEngine.deRef(ruleToHits.get(rule));
-                ruleToHits.replace(rule, newHit);
-            }
-
-            if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
-
-            if (r.getPriority() <= rule.getPriority() && !r.equals(rule)) {
-                int newHit = bddEngine.diff(ruleToHits.get(r), ruleToBddMatch.get(rule));
-                bddEngine.deRef(ruleToHits.get(r));
-                ruleToHits.replace(r, newHit);
-            }
-        }
-
-        if (ruleToHits.get(rule) != BDDEngine.BDDFalse) {
+        int hit = getHit(rule);
+        if (hit != BDDEngine.BDDFalse) {
             s1 += System.nanoTime();
             s1to2 -= System.nanoTime();
-            bddEngine.ref(ruleToHits.get(rule));
-            ret.add(ruleToHits.get(rule), null, rule.getOutPort());
+            ret.add(hit, null, rule.getOutPort());
             s1to2 += System.nanoTime();
             s1 -= System.nanoTime();
+        } else {
+            bddEngine.deRef(hit);
         }
     }
 
     private void identifyChangesDeletion(Rule rule, Changes ret) {
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
-
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
         sorted.sort(comp);
 
+        int hit = getHit(rule);
         for (Rule r : sorted) {
-            if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
-
             if (r.getPriority() < rule.getPriority()) {
-                int intersection = bddEngine.and(ruleToBddMatch.get(r), ruleToHits.get(rule));
+                int intersection = bddEngine.and(ruleToBddMatch.get(r), hit);
 
-                int newHit = bddEngine.or(ruleToHits.get(r), intersection);
-                bddEngine.deRef(ruleToHits.get(r));
-                ruleToHits.replace(r, newHit);
-
-                newHit = bddEngine.diff(ruleToHits.get(rule), intersection);
-                bddEngine.deRef(ruleToHits.get(rule));
-                ruleToHits.replace(rule, newHit);
+                int newHit = bddEngine.diff(hit, intersection);
+                bddEngine.deRef(hit);
+                hit = newHit;
 
                 if (intersection != BDDEngine.BDDFalse && r.getOutPort() != rule.getOutPort()) {
                     s1 += System.nanoTime();
@@ -161,9 +152,8 @@ public class InverseModel {
         }
         targetNode.remove(rule, size);
         bddEngine.deRef(ruleToBddMatch.get(rule));
-        bddEngine.deRef(ruleToHits.get(rule));
         ruleToBddMatch.remove(rule);
-        ruleToHits.remove(rule);
+        bddEngine.deRef(hit);
     }
 
 

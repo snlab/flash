@@ -232,7 +232,7 @@ public class AtomVerifier {
      * @return #PEC
      */
     public int checkPECSize() {
-        int ret = 0; // assume there is a PEC taking default actions on all switches
+        int ret = 0;
 
         HashMap<Long, HashSet<Port>> atomToActions = new HashMap<>();
         for (Map.Entry<Port, HashSet<Long>> entry : label.entrySet()) {
@@ -255,6 +255,7 @@ public class AtomVerifier {
             }
         }
 
+        if (ret == 0) ret = 1;
         return ret;
     }
 
