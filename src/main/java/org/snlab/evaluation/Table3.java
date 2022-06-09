@@ -84,7 +84,7 @@ public class Table3 {
         ratio = 1000L * network.getInitialRules().size() * (testDeletion ? 2 : 1) * test;
         overall(network);
 
-        batchSize(network);
+        // batchSize(network);
         // checkAllPair(network);
     }
 
@@ -290,19 +290,13 @@ public class Table3 {
         AtomVerifier AtomVerifier = new AtomVerifier();
 
         int cnt = 0;
-        Rule rulePrime;
-        ArrayList<Rule> ruleList1 = new ArrayList<>(), ruleList2 = new ArrayList<>();
         for (Rule rule : network.getInitialRules()) {
             cnt ++;
 
-            rulePrime = new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort());
-            ruleList1.add(rulePrime);
-            APVerifier.insertRule(rulePrime);
+            APVerifier.insertRule(rule);
             APVerifier.update();
 
-            rulePrime = new Rule(rule.getDevice(), rule.getMatch().longValue(), rule.getPrefix(), rule.getOutPort());
-            ruleList2.add(rulePrime);
-            AtomVerifier.insertRule(rulePrime);
+            AtomVerifier.insertRule(rule);
 
             Changes changes = FIMT.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
             FIMT.update(changes);
@@ -314,14 +308,13 @@ public class Table3 {
         if (AtomVerifier.checkPECSize() != APVerifier.predSize()) {
             System.out.println("Something wrong about AtomVerifier");
         }
-        int p1 = 0, p2 = 0;
         for (Rule rule : network.getInitialRules()) {
             cnt ++;
 
-            APVerifier.removeRule(ruleList1.get(p1 ++));
+            APVerifier.removeRule(rule);
             APVerifier.update();
 
-            AtomVerifier.removeRule(ruleList2.get(p2 ++));
+            AtomVerifier.removeRule(rule);
 
             Changes changes = FIMT.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
             FIMT.update(changes);

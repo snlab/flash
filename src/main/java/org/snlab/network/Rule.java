@@ -9,8 +9,6 @@ public class Rule {
 //    private BigInteger dstIp;
     private int prefix, priority;
     private Port outPort;
-    private int bddmatch = 0; // in bdd format
-    private int hit;
     private Device device;
     private boolean isLast = false;
 
@@ -53,14 +51,6 @@ public class Rule {
         return match;
     }
 
-    public int getHit() {
-        return hit;
-    }
-
-    public void setHit(int hit) {
-        this.hit = hit;
-    }
-
     public int getPrefix() {
         return prefix;
     }
@@ -71,14 +61,6 @@ public class Rule {
 
     public int getPriority() {
         return priority;
-    }
-
-    public int getBddmatch() {
-        return bddmatch;
-    }
-
-    public void setBddmatch(int bddmatch) {
-        this.bddmatch = bddmatch;
     }
 
     public void setLast(boolean last) {
