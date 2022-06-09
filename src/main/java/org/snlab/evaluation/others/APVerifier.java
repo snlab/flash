@@ -32,6 +32,7 @@ public class APVerifier {
     private int size = 32;
     private final HashMap<Port, HashSet<Integer>> portToPreds;
     private final HashMap<Integer, Ports> predToPorts;
+    private final HashMap<Rule, Integer> ruleToHits, ruleToBddMatch;
 
     private double s1 = 0, s2 = 0, sports = 0;
 
@@ -54,6 +55,8 @@ public class APVerifier {
         this.portToPreds = new HashMap<>();
         this.predToPorts = new HashMap<>();
         this.deviceToRules = new HashMap<>();
+        this.ruleToHits = new HashMap<>();
+        this.ruleToBddMatch = new HashMap<>();
 
         // Relabel every device as the index used by Ports, starting from 0
         for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new TrieRules());
@@ -65,36 +68,36 @@ public class APVerifier {
             key.add(p);
             Rule rule = new Rule(device, 0, 0, -1, p);
             deviceToRules.get(device).insert(rule, size);
-            rule.setHit(BDDEngine.BDDTrue);
-            rule.setBddmatch(BDDEngine.BDDTrue);
+            ruleToBddMatch.put(rule, BDDEngine.BDDTrue);
+            ruleToHits.put(rule, bddEngine.ref(BDDEngine.BDDTrue));
 
             this.portToPreds.putIfAbsent(rule.getOutPort(), new HashSet<>());
-            this.portToPreds.get(rule.getOutPort()).add(rule.getHit());
+            this.portToPreds.get(rule.getOutPort()).add(ruleToHits.get(rule));
         }
         this.predToPorts.put(BDDEngine.BDDTrue, base.create(key, 0, key.size()));
     }
 
     public void insertRule(Rule rule) {
         s1 -= System.nanoTime();
-        rule.setHit(bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
-        rule.setBddmatch(bddEngine.ref(rule.getHit()));
+        ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
+        ruleToHits.put(rule, bddEngine.ref(ruleToBddMatch.get(rule)));
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
 
         for (Rule r : targetNode.getAllOverlappingWith(rule, size)) {
             if (r.getPriority() > rule.getPriority()) {
-                int newHit = bddEngine.diff(rule.getHit(), r.getBddmatch());
-                bddEngine.deRef(rule.getHit());
-                rule.setHit(newHit);
+                int newHit = bddEngine.diff(ruleToHits.get(rule), ruleToBddMatch.get(r));
+                bddEngine.deRef(ruleToHits.get(rule));
+                ruleToHits.replace(rule, newHit);
             }
 
-            if (rule.getHit() == BDDEngine.BDDFalse) break;
+            if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
 
-            if (r.getPriority() <= rule.getPriority() && r != rule) {
-                int intersection = bddEngine.and(r.getHit(), rule.getHit());
+            if (r.getPriority() <= rule.getPriority() && !r.equals(rule)) {
+                int intersection = bddEngine.and(ruleToHits.get(r), ruleToHits.get(rule));
 
-                int newHit = bddEngine.diff(r.getHit(), intersection);
-                bddEngine.deRef(r.getHit());
-                r.setHit(newHit);
+                int newHit = bddEngine.diff(ruleToHits.get(r), intersection);
+                bddEngine.deRef(ruleToHits.get(r));
+                ruleToHits.replace(r, newHit);
 
                 if (intersection != BDDEngine.BDDFalse && r.getOutPort() != rule.getOutPort()) {
                     changes.add(new Change(intersection, r.getOutPort(), rule.getOutPort()));
@@ -116,18 +119,18 @@ public class APVerifier {
         sorted.sort(comp);
 
         for (Rule r : sorted) {
-            if (rule.getHit() == BDDEngine.BDDFalse) break;
+            if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
 
             if (r.getPriority() < rule.getPriority()) {
-                int intersection = bddEngine.and(r.getBddmatch(), rule.getHit());
+                int intersection = bddEngine.and(ruleToBddMatch.get(r), ruleToHits.get(rule));
 
-                int newHit = bddEngine.or(r.getHit(), intersection);
-                bddEngine.deRef(r.getHit());
-                r.setHit(newHit);
+                int newHit = bddEngine.or(ruleToHits.get(r), intersection);
+                bddEngine.deRef(ruleToHits.get(r));
+                ruleToHits.replace(r, newHit);
 
-                newHit = bddEngine.diff(rule.getHit(), intersection);
-                bddEngine.deRef(rule.getHit());
-                rule.setHit(newHit);
+                newHit = bddEngine.diff(ruleToHits.get(rule), intersection);
+                bddEngine.deRef(ruleToHits.get(rule));
+                ruleToHits.replace(rule, newHit);
 
                 if (intersection != BDDEngine.BDDFalse && r.getOutPort() != rule.getOutPort()) {
                     changes.add(new Change(intersection, rule.getOutPort(), r.getOutPort()));
@@ -137,8 +140,10 @@ public class APVerifier {
             }
         }
         targetNode.remove(rule, size);
-        bddEngine.deRef(rule.getBddmatch());
-        bddEngine.deRef(rule.getHit());
+        bddEngine.deRef(ruleToBddMatch.get(rule));
+        bddEngine.deRef(ruleToHits.get(rule));
+        ruleToBddMatch.remove(rule);
+        ruleToHits.remove(rule);
         s1 += System.nanoTime();
     }
 
