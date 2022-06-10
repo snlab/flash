@@ -18,7 +18,7 @@ public class AtomVerifier {
     private final HashMap<Port, HashSet<Long>> label;
     private final TreeSet<Long> atoms; // red-black tree
 
-    private double s = 0, sports = 0;
+    private double s = 0;
     public final Long MIN = 0L, MAX = 1L << 32;
 
     public double opCnt = 0;
@@ -45,9 +45,6 @@ public class AtomVerifier {
         atoms.add(H);
     }
 
-
-    private long suffix = 1L << 8; // FIXME the suffix hack is a little bit tricky
-
     /**
      * The half-closed interval previously represented by a needs to
      * be now represented by two atoms instead, namely a and aPrime.
@@ -59,15 +56,8 @@ public class AtomVerifier {
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());
         ArrayList<Pair<Long, Long>> ret = new ArrayList<>();
 
-
-        // createInterval(L, H, ret);
-        if (r.getSrcPrefix() != 0) {
-            for (int i = 0; i < suffix; i ++) {
-                createInterval(L + ((long) i << 32), H + ((long) i << 32), ret);
-            }
-        } else {
-            int i = r.getSrc();
-            createInterval(L + ((long) i << 32), H + ((long) i << 32), ret);
+        for (int i = 0; i < (1 << r.getSrcPrefix()); i ++) {
+            createInterval(L + i * rH(0, r.getSrcPrefix()), H + i * rH(0, r.getSrcPrefix()), ret);
         }
 
         return ret;
@@ -81,15 +71,9 @@ public class AtomVerifier {
         TreeSet<Long> ret = new TreeSet<>();
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());  // [L, H)
 
-        if (r.getSrcPrefix() == 0) {
-            for (int i = 0; i < suffix; i++) {
-                ret.addAll(atoms.subSet(L + ((long) i << 32), H + ((long) i << 32)));
-            }
-        } else {
-            int i = r.getSrc();
-            ret.addAll(atoms.subSet(L + ((long) i << 32), H + ((long) i << 32)));
+        for (int i = 0; i < (1 << r.getSrcPrefix()); i ++) {
+            ret.addAll(atoms.subSet(L + i * rH(0, r.getSrcPrefix()), H + i * rH(0, r.getSrcPrefix())));
         }
-
         return ret;
     }
 
@@ -109,18 +93,15 @@ public class AtomVerifier {
         return ret;
     }
 
-    public List<Long> insertRule(Rule r) {
+    public void insertRule(Rule r) {
         s -= System.nanoTime();
-        List<Long> changes = new ArrayList<>();
         ArrayList<Pair<Long, Long>> change = createAtom(r);
 
         for (Pair<Long, Long> aToPrime : change) {
             opCnt ++;
 
             Long a = aToPrime.getFirst(), aPrim = aToPrime.getSecond();
-            sports -= System.nanoTime();
-            owner.put(aPrim, deepClone(owner.get(a))); // WARNING: this must be a deep clone
-            sports += System.nanoTime();
+            owner.put(aPrim, deepClone(owner.get(a))); // WARNING: this is a deep clone
             for (TreeMap<Integer, Rule> bst : owner.get(a).values()) { // assert bst != null
                 Rule rPrime = bst.lastEntry().getValue();
                 label.get(rPrime.getOutPort()).add(aPrim);
@@ -140,7 +121,6 @@ public class AtomVerifier {
             if ((rPrime == null) || (rPrime.getPriority() < r.getPriority())) {
                 label.putIfAbsent(r.getOutPort(), new HashSet<>());
                 label.get(r.getOutPort()).add(a);
-                changes.add(a);
 
                 if ((rPrime != null) && (rPrime.getOutPort() != r.getOutPort())) {
                     label.get(rPrime.getOutPort()).remove(a);
@@ -149,7 +129,6 @@ public class AtomVerifier {
             bst.put(r.getPriority(), r);
         }
         s += System.nanoTime();
-        return changes;
     }
 
     public void removeRule(Rule r) {
@@ -171,7 +150,6 @@ public class AtomVerifier {
                 label.get(r.getOutPort()).remove(a);
                 if (!bst.isEmpty()) {
                     Rule rPrimePrime = bst.lastEntry().getValue();
-                    label.putIfAbsent(rPrimePrime.getOutPort(), new HashSet<>());
                     label.get(rPrimePrime.getOutPort()).add(a);
                 }
             }
@@ -184,7 +162,6 @@ public class AtomVerifier {
                     atoms.remove(a);
                 }
             }
-
         }
         s += System.nanoTime();
     }
@@ -232,7 +209,7 @@ public class AtomVerifier {
      * @return #PEC
      */
     public int checkPECSize() {
-        int ret = 0;
+        int ret = 0; // assume there is a PEC taking default actions on all switches
 
         HashMap<Long, HashSet<Port>> atomToActions = new HashMap<>();
         for (Map.Entry<Port, HashSet<Long>> entry : label.entrySet()) {
@@ -243,19 +220,18 @@ public class AtomVerifier {
         }
 
         HashSet<Long> skip = new HashSet<>();
-        for (Long atom : atoms) if (!Objects.equals(atom, MAX)) {
+        for (Long atom : atoms) if (atom != MAX) {
             if (skip.contains(atom)) continue;
 
             skip.add(atom);
             ret += 1;
 
-            for (Long aPrime : atoms) if (!Objects.equals(aPrime, MAX)) {
+            for (Long aPrime : atoms) if (aPrime != MAX) {
                 if (skip.contains(aPrime)) continue;
                 if (checkEquivalence(atomToActions.get(atom), atomToActions.get(aPrime))) skip.add(aPrime);
             }
         }
 
-        if (ret == 0) ret = 1;
         return ret;
     }
 
@@ -271,11 +247,9 @@ public class AtomVerifier {
         if (size == 0) {
             long nsToMs = 1000L * 1000L;
             System.out.println("    Time " + (s / nsToMs) + " ms in total");
-            System.out.println("    Ports " + (sports / nsToMs) + " ms in total");
         } else {
             long nsToUsPU = 1000L * size;
             System.out.println("    Time " + (s / nsToUsPU) + " us per-update");
-            System.out.println("    Ports " + (sports / nsToUsPU) + " us per-update");
         }
         return s;
     }
@@ -292,4 +266,3 @@ public class AtomVerifier {
         return ret;
     }
 }
-
