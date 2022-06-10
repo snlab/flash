@@ -50,10 +50,7 @@ $ ./build.sh
 ```
 This script will install all necessary dependent libraries, then build the java project, create a folder `dataset` and download all datasets for evaluation. 
 
-Also, an executable script `flash` is generated for easy to use the JAR file. For example:
-```
-$ ./flash -h
-```
+
 ***Note***:
 
 In the following content, the execution directory is `sigcomm22-eval` if not explicitely specified.
@@ -61,7 +58,13 @@ In the following content, the execution directory is `sigcomm22-eval` if not exp
 ## Command line options
 Flash provides a set of command line options as listed bellow. You can also use the following command to inspect all avaliable options.
 ```bash
-$ java -jar flash.jar -h
+$ ./evaluator -h
+usage: evaluator.py [-h] -e EVALUATION [-o OUTPUT]
+
+options:
+  -h, --help     show this help message and exit
+  -e EVALUATION  The EVALUATION to be run
+  -o OUTPUT      The OUTPUT log file, default: tmp/log.txt
 ```
 
 > TBD: A table for cmd options.
