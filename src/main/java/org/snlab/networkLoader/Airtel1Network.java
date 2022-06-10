@@ -16,7 +16,7 @@ public class Airtel1Network {
         Set<String> devicenames = new HashSet<>();
 
         try {
-            Scanner in = new Scanner(new File("airtel1/topo.txt"));
+            Scanner in = new Scanner(new File("dataset/Airtel1/topo.txt"));
             while (in.hasNext()) {
                 String[] tokens = in.nextLine().split(" ");
 

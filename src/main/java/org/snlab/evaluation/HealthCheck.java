@@ -19,7 +19,6 @@ public class HealthCheck {
     public static void run() {
         healthCheck(I2Network.getNetwork().setName("Internet2"));
         healthCheck(StanfordNetwork.getNetwork().setName("Stanford"));
-        // healthCheck(Airtel1Network.getNetwork().setName("Airtel1"));
     }
 
     private static void healthCheck(Network network) {

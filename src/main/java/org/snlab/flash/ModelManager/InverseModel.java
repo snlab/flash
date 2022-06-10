@@ -87,6 +87,8 @@ public class InverseModel {
         for (Rule rule : deleted) deviceToRules.get(rule.getDevice()).remove(rule, size);
 
         Changes ret = new Changes(bddEngine);
+        // Notice recomputing the #ECs can be faster than rule-deleting if many rules are deleted (especially when all rules are deleted).
+        // For the purpose of evaluation, we did not go through such short-cut.
         for (Rule rule : deleted) identifyChangesDeletion(rule, ret);
         for (Rule rule : inserted) identifyChangesInsert(rule, ret);
         s1 += System.nanoTime();
@@ -96,6 +98,8 @@ public class InverseModel {
     private int getHit(Rule rule) {
         int hit = bddEngine.ref(ruleToBddMatch.get(rule));
         for (Rule r : deviceToRules.get(rule.getDevice()).getAllOverlappingWith(rule, size)) {
+            if (!ruleToBddMatch.containsKey(r)) continue;
+
             if (r.getPriority() >= rule.getPriority() && !r.equals(rule)) {
                 int newHit = bddEngine.diff(hit, ruleToBddMatch.get(r));
                 bddEngine.deRef(hit);
@@ -125,6 +129,8 @@ public class InverseModel {
     }
 
     private void identifyChangesDeletion(Rule rule, Changes ret) {
+        if (!ruleToBddMatch.containsKey(rule)) return; // something wrong with dataset, cannot find the rule to be removed
+
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
@@ -132,6 +138,8 @@ public class InverseModel {
 
         int hit = getHit(rule);
         for (Rule r : sorted) {
+            if (!ruleToBddMatch.containsKey(r)) continue;
+
             if (r.getPriority() < rule.getPriority()) {
                 int intersection = bddEngine.and(ruleToBddMatch.get(r), hit);
 

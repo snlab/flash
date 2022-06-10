@@ -23,6 +23,7 @@ public class Runner {
     }
 
     public static void main(String[] args) {
-        HealthCheck.run();
+        // HealthCheck.run();
+        Table3.run();
     }
 }

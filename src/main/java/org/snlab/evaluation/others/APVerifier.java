@@ -111,6 +111,8 @@ public class APVerifier {
     }
 
     public void removeRule(Rule rule) {
+        if (!ruleToBddMatch.containsKey(rule)) return; // something wrong with dataset, cannot find the rule to be removed
+
         s1 -= System.nanoTime();
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
 
@@ -119,6 +121,8 @@ public class APVerifier {
         sorted.sort(comp);
 
         for (Rule r : sorted) {
+            if (!ruleToBddMatch.containsKey(r)) continue;
+
             if (ruleToHits.get(rule) == BDDEngine.BDDFalse) break;
 
             if (r.getPriority() <= rule.getPriority() && !r.equals(rule)) {

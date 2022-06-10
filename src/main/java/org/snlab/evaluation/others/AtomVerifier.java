@@ -171,7 +171,10 @@ public class AtomVerifier {
     }
 
     public int atomSize() {
-        return atoms.size() - 1; // MAX -> \inf is not counted
+        int ret = atoms.size() - 1; // MAX -> \inf is not counted
+        // This hack deprecated the issue about "empty atom" (which is also mentioned in ddNF's paper)
+        if (ret <= 0) ret = 1;
+        return ret;
     }
 
     /**
@@ -232,6 +235,7 @@ public class AtomVerifier {
             }
         }
 
+        if (ret <= 0) ret = 1;
         return ret;
     }
 
