@@ -129,6 +129,8 @@ public class InverseModel {
     }
 
     private void identifyChangesDeletion(Rule rule, Changes ret) {
+        if (ruleToBddMatch.get(rule) == null) return; // cannot find the rule to be removed
+
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();

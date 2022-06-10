@@ -1,15 +1,18 @@
 package org.snlab.flash.ModelManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.snlab.network.Rule;
 
+// Build index for prefix-match to reduce the scope of "overlapped rules".
+// Notice the ternary-match is allowed, but without index.
 public class TrieRules {
-    ArrayList<Rule> rules;
+    HashSet<Rule> rules;
     TrieRules left, right, dst;
 
     public TrieRules() {
-        rules = new ArrayList<>();
+        rules = new HashSet<>();
         left = right = null;
     }
 
@@ -35,7 +38,7 @@ public class TrieRules {
         this.rules.add(rule);
     }
 
-    private ArrayList<Rule> getRules() {
+    private HashSet<Rule> getRules() {
         return this.rules;
     }
 
@@ -104,6 +107,7 @@ public class TrieRules {
     /**
      * @param rule the target rule
      * @return all rules overlapped with the target rule
+     *         here "overlapping" means there is no conflict between prefix-matches (ternary-match is not checked here)
      */
     public ArrayList<Rule> getAllOverlappingWith(Rule rule, int size) {
         ArrayList<Rule> ret = new ArrayList<>();

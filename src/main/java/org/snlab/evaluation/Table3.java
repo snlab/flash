@@ -254,7 +254,7 @@ public class Table3 {
     public static void evaluateOnSequence(Network network) { // Table 3
         System.gc();
         System.runFinalization();
-        System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
+        System.out.println("# Updates: " + network.updateSequence.size() + " # Switches: " + network.getAllDevices().size());
         memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 

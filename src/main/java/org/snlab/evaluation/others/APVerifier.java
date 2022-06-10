@@ -111,6 +111,8 @@ public class APVerifier {
     }
 
     public void removeRule(Rule rule) {
+        if (ruleToBddMatch.get(rule) == null) return; // cannot find the rule to be removed
+
         s1 -= System.nanoTime();
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
 
