@@ -73,12 +73,12 @@ public class Table3 {
         printWriter.println();
         printWriter.println();
         printWriter.println(networkInfo);
-        printWriter.println("deltanet, apkeep, jiffy, jiffy w/o imt");
+        printWriter.println("Deltanet*, APKeep*, Flash");
         ratio = 1e9  * (testDeletion ? 2 : 1) * testRepeat;
-        printWriter.println(" Total time: (" + (s1 / ratio) + ", " + (s2 / ratio) + ", " + (s3 / ratio) + ", " + (s4 / ratio) + " ) s.");
+        printWriter.println(" Total time: (" + (s1 / ratio) + ", " + (s2 / ratio) + ", " + (s3 / ratio) + " ) s.");
         double repeats = warmupRepeat + testRepeat, operationRatio = 1e5 * repeats;
-        printWriter.println(" Operations: (" + (t1 / operationRatio) + ", " + (t2 / operationRatio) + ", " + (t3 / operationRatio) + ", " + (t4 / operationRatio) + " ) 1e5.");
-        printWriter.println(" Memory Usage: (" + (m1 / repeats) + ", " + (m2 / repeats) + ", " + (m3 / repeats) + ", " + (m4 / repeats) + " ) Mb.");
+        printWriter.println(" Operations: (" + (t1 / operationRatio) + ", " + (t2 / operationRatio) + ", " + (t3 / operationRatio) + " ) 1e5.");
+        printWriter.println(" Memory Usage: (" + (m1 / repeats) + ", " + (m2 / repeats) + ", " + (m3 / repeats) + " ) Mb.");
         printWriter.close();
     }
 
@@ -110,10 +110,12 @@ public class Table3 {
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s3 += seq(network, true);
         System.out.println("==================== Ended ==================== ");
+        /*
         for (int i = 0; i < warmupRepeat; i ++) seq(network, false);
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s4 += seq(network, false);
         System.out.println("==================== Ended ==================== ");
+         */
         printLog("overall.txt", network.getName() + " # Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         System.out.println("+++++++++++++++++++++ END " + network.getName() + " END +++++++++++++++++++++");
         // checkAllPair(network);
@@ -273,11 +275,13 @@ public class Table3 {
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s3 += seqPrime(network, true);
         System.out.println("==================== Ended ==================== ");
+        /*
         for (int i = 0; i < warmupRepeat; i ++) seqPrime(network, false);
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s4 += seqPrime(network, false);
         System.out.println("==================== Ended ==================== ");
-        printLog("overall.txt", network.getName() + " # Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
+         */
+        printLog("overall.txt", network.getName() + " # Updates: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         System.out.println("+++++++++++++++++++++ END " + network.getName() + " END +++++++++++++++++++++");
 
     }
