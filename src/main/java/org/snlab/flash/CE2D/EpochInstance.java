@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.snlab.evaluation.Main;
 import org.snlab.flash.Dispatcher;
 import org.snlab.flash.ModelManager.Changes;
 import org.snlab.flash.ModelManager.InverseModel;
@@ -57,9 +56,9 @@ public class EpochInstance {
             Changes cgs = model.miniBatch(insertions, deletions);
             Set<Integer> transfered = model.update(cgs);
 
-            if (Main.evalOptions.mode.equals("PUV") || Main.evalOptions.mode.equals("BUV")) {
+            if (Dispatcher.config.mode.equals("PUV") || Dispatcher.config.mode.equals("BUV")) {
 
-                if (this.epoch.equals(Main.evalOptions.checkEpoch) && transfered.size() > 0) {
+                if (this.epoch.equals(Dispatcher.config.checkEpoch) && transfered.size() > 0) {
                     propertyChecker.checkLoop(network, model.getPortToPredicate(), transfered);
                     if (propertyChecker.hasLoop) {
                         Dispatcher.logger.logPrintln("Found loop using " + (batchSize > 1 ? "BUV" : "PUV") + " at time: "

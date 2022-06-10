@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.snlab.evaluation.Main;
 import org.snlab.flash.CE2D.EpochInstance;
 import org.snlab.flash.CE2D.Logger;
 import org.snlab.network.Network;
@@ -22,7 +21,7 @@ import org.snlab.network.Update;
 // Concerns: (1) with epoch v.s. without epoch; (2) with CE2D v.s. without CE2D
 public class Dispatcher {
     public static Config config;
-    public static Logger logger = new Logger(Main.evalOptions.output);
+    public static Logger logger = new Logger(config.output);
     private Network network;
     private BlockingQueue<Update> updateQueue = new LinkedBlockingQueue<>();
     private Map<String, EpochInstance> epochToInstance = new HashMap<>();
