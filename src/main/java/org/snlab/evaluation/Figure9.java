@@ -1,5 +1,6 @@
 package org.snlab.evaluation;
 
+import org.jgrapht.alg.util.Pair;
 import org.snlab.flash.ModelManager.Changes;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.flash.ModelManager.Ports.PersistentPorts;
@@ -21,7 +22,11 @@ public class Figure9 {
     public static void run() {
         batchSize(I2Network.getNetwork().setName("Internet2"));
         batchSize(StanfordNetwork.getNetwork().setName("Stanford"));
-        batchSize(Airtel1Network.getNetwork().setName("Airtel1"));
+        try {
+            batchSize(Airtel1Network.getNetwork().setName("Airtel1"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void batchSize(Network network) {
@@ -107,5 +112,35 @@ public class Figure9 {
         }
         System.out.println("#EC: " + verifier.predSize());
         return verifier.printTime(network.getInitialRules().size());
+    }
+
+
+    private static double batchPrime(Network network, int size) {
+        System.gc();
+        InverseModel verifier = new InverseModel(network, new PersistentPorts());
+
+        int cnt = 0;
+        ArrayList<Rule> insertion = new ArrayList<>(), deletion = new ArrayList<>();
+        for (Pair<Boolean, Rule> pair : network.updateSequence) {
+            cnt ++;
+            if (pair.getFirst()) insertion.add(pair.getSecond()); else deletion.add(pair.getSecond());
+
+            if (cnt % size == 0) {
+                Changes changes = verifier.miniBatch(insertion, deletion);
+                verifier.update(changes);
+
+                insertion.clear();
+                deletion.clear();
+            }
+        }
+        if (cnt % size != 0) {
+            Changes changes = verifier.miniBatch(insertion, deletion);
+            verifier.update(changes);
+        }
+
+        System.out.println("Flash #EC: " + verifier.predSize() + (" 100 batch"));
+        // m4 += printMemory();
+        // t4 += verifier.bddEngine.opCnt;
+        return verifier.printTime(network.updateSequence.size());
     }
 }

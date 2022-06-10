@@ -129,8 +129,6 @@ public class InverseModel {
     }
 
     private void identifyChangesDeletion(Rule rule, Changes ret) {
-        if (!ruleToBddMatch.containsKey(rule)) return; // something wrong with dataset, cannot find the rule to be removed
-
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
@@ -138,8 +136,6 @@ public class InverseModel {
 
         int hit = getHit(rule);
         for (Rule r : sorted) {
-            if (!ruleToBddMatch.containsKey(r)) continue;
-
             if (r.getPriority() < rule.getPriority()) {
                 int intersection = bddEngine.and(ruleToBddMatch.get(r), hit);
 
