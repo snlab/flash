@@ -8,6 +8,7 @@ import org.snlab.network.Network;
 import org.snlab.network.Rule;
 import org.snlab.networkLoader.Airtel1Network;
 import org.snlab.networkLoader.I2Network;
+import org.snlab.networkLoader.LNetNetwork;
 import org.snlab.networkLoader.StanfordNetwork;
 
 import java.io.FileWriter;
@@ -27,6 +28,19 @@ public class Figure9 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Network network = LNetNetwork.getLNET().setName("LNet0");
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+        batchSize(network);
+
+        network = LNetNetwork.getLNETStar().setName("LNet*");
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+        batchSize(network);
+
+        /* heap exceed
+        network = LNetNetwork.getLNET1().setName("LNet1");
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+        batchSize(network);
+         */
     }
 
     private static void batchSize(Network network) {
@@ -37,22 +51,30 @@ public class Figure9 {
         for (int size = 1; size <= tot; size ++) {
             s = 0;
 
-            /*
-            if ((tot / size) < b) {
-                b = tot / size;
-                cnt ++;
-            } else {
-                continue;
+            if (size > 100 && size != tot) {
+                if ((tot / size) < b) {
+                    b = tot / size;
+                    cnt ++;
+                } else {
+                    continue;
+                }
             }
-             */
-
-            if (size > 100 && size != tot) continue;
 
             System.out.println("==================== Size " + size + " ==================== ");
-            for (int i = 0; i < warmup; i ++) testWithBatchSize(network, size);
+            for (int i = 0; i < warmup; i ++) {
+                if (network.getName().equals("Airtel1")) {
+                    testWithBatchSizePrime(network, size);
+                } else {
+                    testWithBatchSize(network, size);
+                }
+            }
             System.out.println("==================== Loaded ==================== ");
             for (int i = 0; i < test; i ++) {
-                s += testWithBatchSize(network, size);
+                if (network.getName().equals("Airtel1")) {
+                    testWithBatchSizePrime(network, size);
+                } else {
+                    testWithBatchSize(network, size);
+                }
                 System.gc();
             }
             System.out.println("==================== Ended ==================== ");
@@ -115,7 +137,7 @@ public class Figure9 {
     }
 
 
-    private static double batchPrime(Network network, int size) {
+    private static double testWithBatchSizePrime(Network network, int size) {
         System.gc();
         InverseModel verifier = new InverseModel(network, new PersistentPorts());
 

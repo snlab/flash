@@ -42,17 +42,17 @@ public class Table3 {
         evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
 
         Network network = LNetNetwork.getLNET().setName("LNet0");
-        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24); // src match
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+        evaluateOnSnapshot(network);
+
+        network = LNetNetwork.getLNETStar().setName("LNet*");
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
 
         /* heap exceed
         network = LNetNetwork.getLNET1().setName("LNet1");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOn(network);
-
-        network = LNetNetwork.getLNETStar().setName("LNet*");
-        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
-        evaluateOnSnapshot(network);
          */
 
         network = null;
@@ -100,10 +100,12 @@ public class Table3 {
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s1 += deltanet(network);
         System.out.println("==================== Ended ==================== ");
-        for (int i = 0; i < warmupRepeat; i ++) apkeep(network, new ArrayPorts());
-        System.out.println("==================== Loaded ==================== ");
-        for (int i = 0; i < testRepeat; i ++) s2 += apkeep(network, new ArrayPorts());
-        System.out.println("==================== Ended ==================== ");
+        if (!network.getName().equals("LNet1")) { // skip LNet1 for APKeep*, which cannot be finished in time
+            for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts());
+            System.out.println("==================== Loaded ==================== ");
+            for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts());
+            System.out.println("==================== Ended ==================== ");
+        }
         for (int i = 0; i < warmupRepeat; i ++) seq(network, true);
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s3 += seq(network, true);

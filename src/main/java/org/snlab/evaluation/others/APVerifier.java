@@ -140,8 +140,8 @@ public class APVerifier {
             }
         }
         targetNode.remove(rule, size);
-        // bddEngine.deRef(ruleToBddMatch.get(rule));
-        // bddEngine.deRef(ruleToHits.get(rule));
+        bddEngine.deRef(ruleToBddMatch.get(rule));
+        bddEngine.deRef(ruleToHits.get(rule));
         ruleToBddMatch.remove(rule);
         ruleToHits.remove(rule);
         s1 += System.nanoTime();
