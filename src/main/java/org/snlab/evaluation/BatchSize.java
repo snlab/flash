@@ -76,7 +76,7 @@ public class BatchSize {
         System.out.println("==================== Warmed ==================== ");
 
         for (int size = 1; size <= tot; size ++) {
-            if (cnt > 50 && size < tot) continue;
+            if (cnt > 40 && size < tot) continue;
             if (size > 10 && size != tot) {
                 if ((tot / size) < b) {
                     b = tot / size;
