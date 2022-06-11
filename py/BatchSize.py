@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-import sys
+import sys, os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
 def main(argv):
     argv[1]
-    names = ["LNet0", "LNet1", "LNet*"] #, "Airtel1", "Stanford", "Internet2"]
+    names = ["LNet0", "LNet1", "LNet*", "Airtel1", "Stanford", "Internet2"]
     
     for name in names:
         f = open(argv[1] + "/" + name + "bPuUs.txt", "r")
@@ -19,7 +19,7 @@ def main(argv):
         while True:
             line = f.readline()
             if not line:
-                break;
+                break
 
             f_list = [float(i) for i in line.split(" ") if i.strip()]
             x.append(f_list[0] / totalSize)
@@ -27,10 +27,13 @@ def main(argv):
 
         plt.plot(x, y, label=name)
 
+    plt.legend(names)
     plt.xlabel('Batch size / total #updates')
     plt.ylabel('Model update time (s)')
     plt.yscale('log')
     plt.title("Model update time for different block size")
+    os.makedirs('output', exist_ok=True)
+    plt.savefig('output/batchSize.png')
     plt.show()
 
 if __name__ == "__main__":
