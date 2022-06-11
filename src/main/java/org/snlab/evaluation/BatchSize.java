@@ -87,6 +87,7 @@ public class BatchSize {
                 }
             } else {
                 size += tot / 50;
+                if (size > tot) size = tot;
             }
 
             cnt ++;
