@@ -41,6 +41,15 @@ public class Table3 {
     public static void run(boolean omit) {
         Table3.omit = omit;
 
+        try {
+            evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
+        evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
+        System.gc();
+
         Network network = LNetNetwork.getLNET().setName("LNet0");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
@@ -57,16 +66,6 @@ public class Table3 {
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
         network = null;
-        System.gc();
-
-        try {
-            evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
-        evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
-
         System.gc();
     }
 
