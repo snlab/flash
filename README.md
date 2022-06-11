@@ -10,12 +10,15 @@ This branch contains the Flash artifact for the evaluations in SIGCOMM22 paper "
   - [Entrypoint](#entrypoint)
 - [SIGCOMM22 Evaluations](#sigcomm22-evaluations)
   - [Effects of Fast IMT](#effects-of-fast-imt)
+    - [Overall performance](#overall-performance)
   - [Effects of CE2D](#effects-of-ce2d)
     - [CE2D on OpenR dataset](#ce2d-on-openr-dataset)
     - [Consistent loop detection on OpenR* dataset](#consistent-loop-detection-on-openr-dataset)
     - [Consistent Loop Detection on I2* dataset](#consistent-loop-detection-on-i2-dataset)
     - [All pair reachability check on LNet1 dataset](#all-pair-reachability-check-on-lnet1-dataset)
   - [Micro Benchmark](#micro-benchmark)
+    - [Batch size evaluation](#batch-size-evaluation)
+    - [Time breakdown](#time-breakdown)
 
 # Environment setup
 ## Platform requirements
@@ -71,6 +74,8 @@ options:
 # SIGCOMM22 Evaluations
 
 ## Effects of Fast IMT
+### Overall performance
+
 Run the evaluation:
 ```bash
 $ ./evaluator -e overall
@@ -155,7 +160,7 @@ The evaluation generates a CDF figuer in `output/LNet1AllPair.png` (Figure 8 in 
 The CDF line of the above figure is smoother than the Figure 8 of the paper due to the code cleaning up. We'll update Figure 8 to the newer result.
 
 ## Micro Benchmark
-
+### Batch size evaluation
 ```bash
 $ ./evaluator -e batchSize
 $ python3 py/BatchSize.py ./
@@ -165,6 +170,8 @@ Expected output:
 The first line of command generates few log files, e.g., "LNet0bPuUs.txt". Then one can use the second command to draw a figure (Figure 9 in paper).
 
 ![](figures/batchSize.png)
+
+### Time breakdown
 
 ```bash
 $ ./evaluator -e breakdown
