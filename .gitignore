@@ -4,3 +4,5 @@ sigcomm22-eval
 TODO.md
 tmp/
 __pycache__
+*.jar
+output/

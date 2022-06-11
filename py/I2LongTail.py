@@ -4,7 +4,7 @@ import seaborn as sns
 
 class I2LongTail:
     def __init__(self, output=None) -> None:
-        os.system('mvn exec:java -Dexec.args="-e I2LongTail"')
+        os.system('java -jar flash.jar -e I2LongTail')
         data = {}
         for i in range(1, 8):
             data[i] = {}
@@ -33,7 +33,8 @@ class I2LongTail:
         
         plt.grid()
         if output:
-            plt.savefig(output)
+            os.makedirs('output', exist_ok=True)
+            plt.savefig('output/%s.png' % output)
         else:
             plt.show()
         plt.close()
@@ -47,7 +48,7 @@ class I2LongTail:
         sns.ecdfplot(pdata)
         plt.grid()
         if output:
-            plt.savefig(output)
+            plt.savefig('output/%s1.png' % output)
         else:
             plt.show()
 
