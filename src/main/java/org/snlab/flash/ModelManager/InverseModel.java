@@ -15,7 +15,7 @@ public class InverseModel {
     private int size = 32; // length of packet header
 
     private final HashMap<Rule, Integer> ruleToBddMatch;
-    private final HashMap<Device, Rules> deviceToRules; // FIB snapshots
+    private final HashMap<Device, IndexedRules> deviceToRules; // FIB snapshots
     public HashMap<Ports, Integer> portsToPredicate; // network inverse model
 
     private double s1 = 0, s1to2 = 0, s2 = 0, sports = 0;
@@ -44,7 +44,7 @@ public class InverseModel {
         this.ruleToBddMatch = new HashMap<>();
 
         // Relabel every device as the index used by Ports, starting from 0
-        for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new Rules());
+        for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new IndexedRules());
 
         // Each device has a default rule with default action.
         ArrayList<Port> key = new ArrayList<>();
@@ -131,7 +131,7 @@ public class InverseModel {
     private void identifyChangesDeletion(Rule rule, ConflictFreeChanges ret) {
         if (ruleToBddMatch.get(rule) == null) return; // cannot find the rule to be removed
 
-        Rules targetNode = deviceToRules.get(rule.getDevice());
+        IndexedRules targetNode = deviceToRules.get(rule.getDevice());
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
         sorted.sort(comp);

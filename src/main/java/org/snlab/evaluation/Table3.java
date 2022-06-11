@@ -37,6 +37,7 @@ public class Table3 {
     public static void dead() {
         // Table 3
         Table3.omit = false;
+        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet*"), false, true, false);
         evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
 
         // Figure 6: settings w/o subspace
@@ -110,7 +111,6 @@ public class Table3 {
     public static void evaluateOnSnapshot(Network network, boolean tryDeletanet, boolean tryApkeep, boolean tryFlash) {
         System.gc();
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
-        System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
         s1 = s2 = s3 = s4 = 0;
         t1 = t2 = t3 = t4 = 0;
@@ -127,7 +127,7 @@ public class Table3 {
                 // skip LNet1 for APKeep*, which cannot be finished in 1-hour
             } else {
                 boolean eagerMerge = true;
-                if (network.getName().equals("LNet*")) {
+                if (omit && network.getName().equals("LNet*")) {
                     // APKeep's paper claims to delay merge for better performance
                     // we did not do fine-grained tuning and only try two options: "no delay" and "delay to inf"
                     // we found in dataset "LNet*", the merge needs to be delayed; otherwise it cannot finish in 1-hour
@@ -300,7 +300,6 @@ public class Table3 {
     public static void evaluateOnUpdatesSequence(Network network) { // Table 3
         System.gc();
         System.out.println("# Updates: " + network.updateSequence.size() + " # Switches: " + network.getAllDevices().size());
-        System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
         s1 = s2 = s3 = s4 = 0;
         t1 = t2 = t3 = t4 = 0;
@@ -324,7 +323,7 @@ public class Table3 {
         for (int i = 0; i < testRepeat; i ++) s4 += seqPrime(network, false);
         System.out.println("==================== Ended ==================== ");
          */
-        printLog("overall.txt", network.getName() + " # Updates: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
+        printLog("overall.txt", network.getName() + " # Updates: " + network.updateSequence.size() + " # Switches: " + network.getAllDevices().size());
         System.out.println("+++++++++++++++++++++ END " + network.getName() + " END +++++++++++++++++++++");
 
     }

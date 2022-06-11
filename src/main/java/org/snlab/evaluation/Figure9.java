@@ -45,6 +45,7 @@ public class Figure9 {
     }
 
     private static void batchSize(Network network) {
+        System.out.println("==================== " + network.getName());
         final long ratio = 1000L * network.getInitialRules().size() * (testDeletion ? 2 : 1) * test;
 
         double s;
