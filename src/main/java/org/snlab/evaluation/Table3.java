@@ -113,19 +113,19 @@ public class Table3 {
         System.out.println("+++++++++++++++++++++ " + network.getName() + " +++++++++++++++++++++");
         if (tryDeletanet) {
             for (int i = 0; i < warmupRepeat; i++) deltanet(network);
-            System.out.println("==================== Loaded ==================== ");
+            System.out.println("==================== Warmed ==================== ");
             for (int i = 0; i < testRepeat; i++) s1 += deltanet(network);
         }
         System.out.println("==================== Ended ==================== ");
         if (tryApkeep && !(omit && network.getName().equals("LNet1"))) { // skip LNet1 for APKeep*, which cannot be finished in time
             for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts());
-            System.out.println("==================== Loaded ==================== ");
+            System.out.println("==================== Warmed ==================== ");
             for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts());
             System.out.println("==================== Ended ==================== ");
         }
         if (tryFlash) {
             for (int i = 0; i < warmupRepeat; i++) seq(network, true);
-            System.out.println("==================== Loaded ==================== ");
+            System.out.println("==================== Warmed ==================== ");
             for (int i = 0; i < testRepeat; i++) s3 += seq(network, true);
             System.out.println("==================== Ended ==================== ");
         }
@@ -290,15 +290,15 @@ public class Table3 {
         m1 = m2 = m3 = m4 = 0;
         System.out.println("+++++++++++++++++++++ " + network.getName() + " +++++++++++++++++++++");
         for (int i = 0; i < warmupRepeat; i ++) deltanetPrime(network);
-        System.out.println("==================== Loaded ==================== ");
+        System.out.println("==================== Warmed ==================== ");
         for (int i = 0; i < testRepeat; i ++) s1 += deltanetPrime(network);
         System.out.println("==================== Ended ==================== ");
         for (int i = 0; i < warmupRepeat; i ++) apkeepPrime(network, new ArrayPorts());
-        System.out.println("==================== Loaded ==================== ");
+        System.out.println("==================== Warmed ==================== ");
         for (int i = 0; i < testRepeat; i ++) s2 += apkeepPrime(network, new ArrayPorts());
         System.out.println("==================== Ended ==================== ");
         for (int i = 0; i < warmupRepeat; i ++) seqPrime(network, true);
-        System.out.println("==================== Loaded ==================== ");
+        System.out.println("==================== Warmed ==================== ");
         for (int i = 0; i < testRepeat; i ++) s3 += seqPrime(network, true);
         System.out.println("==================== Ended ==================== ");
         /*

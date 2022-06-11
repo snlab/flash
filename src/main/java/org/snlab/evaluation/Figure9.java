@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class Figure9 {
     private static final boolean testDeletion = true;
-    private static final int warmup = 0, test = 1;
+    private static final int warmup = 3, test = 1;
 
     public static void run() {
         Network network = LNetNetwork.getLNET().setName("LNet0");
@@ -49,6 +49,16 @@ public class Figure9 {
 
         double s;
         int tot = network.getInitialRules().size(), b = tot + 1, cnt = 0;
+
+        for (int i = 1; i <= warmup; i ++) {
+            if (network.getName().equals("Airtel1")) {
+                testWithBatchSizePrime(network, i);
+            } else {
+                testWithBatchSize(network, i);
+            }
+        }
+        System.out.println("==================== Warmed ==================== ");
+
         for (int size = 1; size <= tot; size ++) {
             s = 0;
 
@@ -62,14 +72,6 @@ public class Figure9 {
             }
 
             System.out.println("==================== Size " + size + " ==================== ");
-            for (int i = 0; i < warmup; i ++) {
-                if (network.getName().equals("Airtel1")) {
-                    testWithBatchSizePrime(network, size);
-                } else {
-                    testWithBatchSize(network, size);
-                }
-            }
-            System.out.println("==================== Loaded ==================== ");
             for (int i = 0; i < test; i ++) {
                 if (network.getName().equals("Airtel1")) {
                     testWithBatchSizePrime(network, size);
