@@ -15,18 +15,10 @@ public class Runner {
             Table3.run(true);
         } else if (Main.evalOptions.eval.equals("OverallPerformanceFull")) {
             Table3.run(false);
-        } else if (Main.evalOptions.eval.equals("VerifierHealthCheck")) {
-            HealthCheck.run();
         } else if (Main.evalOptions.eval.equals("BatchSize")) {
             Figure9.run();
         } else {
             System.out.println("Unknown evaluation name: " + Main.evalOptions.eval);
         }
-    }
-
-    public static void main(String[] args) {
-        // HealthCheck.run();
-        Table3.run(true);
-        Figure9.run();
     }
 }

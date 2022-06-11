@@ -58,9 +58,10 @@ public class AtomVerifier {
 
         // For lpm-match only, each rule is represented as a single interval;
         // In our multi-field extension (suffix-match on src), each rule is represented as many intervals.
-        int wildcards = 32 - r.getSrcSuffix();
-        for (int i = 0; i < (1 << wildcards); i ++) {
-            long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
+        // To avoid long-overflow, we assume the 16-bits src field with 8-bits suffix.
+        int wildcards = 16 - r.getSrcSuffix();
+        for (int i = 0; i < (1L << wildcards); i ++) {
+            long srcEncoding = (i * (1L << r.getSrcSuffix()) + r.getSrc()) << 32;
             createInterval(L + srcEncoding, H + srcEncoding, ret);
         }
 
@@ -75,9 +76,9 @@ public class AtomVerifier {
         TreeSet<Long> ret = new TreeSet<>();
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());  // [L, H)
 
-        int wildcards = 32 - r.getSrcSuffix();
-        for (int i = 0; i < (1 << wildcards); i ++) {
-            long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
+        int wildcards = 16 - r.getSrcSuffix();
+        for (int i = 0; i < (1L << wildcards); i ++) {
+            long srcEncoding = (i * (1L << r.getSrcSuffix()) + r.getSrc()) << 32;
             ret.addAll(atoms.subSet(L + srcEncoding, H + srcEncoding));
         }
 

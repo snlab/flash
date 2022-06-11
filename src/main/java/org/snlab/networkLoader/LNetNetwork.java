@@ -247,7 +247,7 @@ public class LNetNetwork {
                             if ((jPod < 5)) {
                                 for (int i = 0; i < npod; i++) {
                                     String dstssw = "ssw-" + iSpine + "-" + (48 * jPod + jRsw) % 48;
-                                    rule = new Rule(device, i, 24, dstip, 24, device.getPort(fsw + ">" + dstssw));
+                                    rule = new Rule(device, i, 8, dstip, 24, device.getPort(fsw + ">" + dstssw));
                                     rule.setPriority(31);
                                     n.addInitialRule(rule);
                                     device.addInitialRule(rule);

@@ -79,7 +79,7 @@ public final class BDDEngine {
         return bdd.ref(ret.result);
     }
 
-    public int encodeIpv4(BigInteger ip, int prefix, int srcIp, int srcPrefix) {
+    public int encodeIpv4(BigInteger ip, int prefix, int srcIp, int srcSuffix) {
         TrieCode ret = dst;
         for (int i = 0; i < prefix; i++) {
             if (ip.testBit(size - 1 - i)) {
@@ -90,7 +90,7 @@ public final class BDDEngine {
         }
 
         TrieCode tmp = src;
-        for (int i = 0; i < srcPrefix; i ++) {
+        for (int i = 0; i < srcSuffix; i ++) {
             if (((srcIp >> i) & 1) == 1) {
                 tmp = tmp.buildLeft(this.bdd, svars[i]);
             } else {
