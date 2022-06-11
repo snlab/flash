@@ -44,6 +44,7 @@ public class Overall {
 
         // Table 3
         Overall.omit = false;
+
         System.out.println("1. Try APKeep* on LNet1 Subspace? (y/n)");
         ans = scanner.nextLine();
         if (ans.equals("y")) {
@@ -57,7 +58,7 @@ public class Overall {
         if (ans.equals("y")) {
             Network network = LNetNetwork.getLNETStar().setName("LNet*");
             network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
-            evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), false, true, false);
+            evaluateOnSnapshot(network, false, true, false);
         }
 
         // Figure 6: settings w/o subspace
