@@ -41,6 +41,7 @@ public class LNet1AllPair {
 
         List<Device> allDevices = new ArrayList<>(network.getAllDevices());
         Collections.shuffle(allDevices);
+        int i = 0;
         for (Device device : allDevices) {
             List<Rule> rulesInSubspace = device.getInitialRules().stream()
                     .filter(rule -> rule.getMatch().longValue() == ip)
@@ -56,6 +57,8 @@ public class LNet1AllPair {
             }
             long s = System.nanoTime();
             policyChecker.check(device, verifier.portsToPredicate.values(), ecToPorts);
+            i++;
+            System.out.println("Finished FIB updates: " + i + "/" + allDevices.size());
             Dispatcher.logger.logPrintln("Allpair using reduction graph time: " + (System.nanoTime() - s));
         }
     }
