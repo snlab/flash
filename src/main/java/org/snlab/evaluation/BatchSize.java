@@ -77,7 +77,7 @@ public class BatchSize {
 
         for (int size = 1; size <= tot; size ++) {
             if (cnt > 30 && size < tot) continue;
-            if (size > 10 && size != tot) {
+            if (size > 5 && size < tot) {
                 if ((tot / size) < b) {
                     b = tot / size;
                 } else {
