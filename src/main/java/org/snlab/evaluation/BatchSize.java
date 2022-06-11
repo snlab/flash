@@ -18,14 +18,7 @@ import java.util.ArrayList;
 
 public class BatchSize {
     private static final boolean testDeletion = true;
-    private static final int warmup = 3, test = 1;
-
-    public static void main(String[] args) throws IOException {
-        Network network = Airtel1Network.getNetwork().setName("Airtel1");
-        testWithBatchSizePrime(network, 1);
-        testWithBatchSizePrime(network, 2);
-        testWithBatchSizePrime(network, 3);
-    }
+    private static final int warmupRepeat = 3, testRepeat = 1;
 
     public static void run() {
         Network network = LNetNetwork.getLNET().setName("LNet0");
@@ -53,12 +46,27 @@ public class BatchSize {
 
     private static void batchSize(Network network) {
         System.out.println("==================== " + network.getName());
-        final long ratio = 1000L * network.getInitialRules().size() * (testDeletion ? 2 : 1) * test;
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(network.getName() + "bPuUs.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert fileWriter != null;
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        if (network.getName().equals("Airtel1")) {
+            printWriter.println(network.updateSequence.size());
+        } else {
+            printWriter.println(network.getInitialRules().size() * (testDeletion ? 2 : 1));
+        }
+        printWriter.close();
+
+        final double ratio = 1e9  * (testDeletion ? 2 : 1) * testRepeat;
 
         double s;
         int tot = network.getInitialRules().size(), b = tot + 1, cnt = 0;
 
-        for (int i = 1; i <= warmup; i ++) {
+        for (int i = 1; i <= warmupRepeat; i ++) {
             if (network.getName().equals("Airtel1")) {
                 testWithBatchSizePrime(network, i);
             } else {
@@ -68,11 +76,8 @@ public class BatchSize {
         System.out.println("==================== Warmed ==================== ");
 
         for (int size = 1; size <= tot; size ++) {
-            s = 0;
-
-            if (size >= 10) continue; // FIXME short-cut for quick test
-
-            if (size > 100 && size != tot) {
+            if (cnt > 20 && size < tot) continue;
+            if (size > 10 && size != tot) {
                 if ((tot / size) < b) {
                     b = tot / size;
                     cnt ++;
@@ -82,25 +87,23 @@ public class BatchSize {
             }
 
             System.out.println("==================== Size " + size + " ==================== ");
-            for (int i = 0; i < test; i ++) {
+            s = 0;
+            for (int i = 0; i < testRepeat; i ++) {
                 if (network.getName().equals("Airtel1")) {
-                    testWithBatchSizePrime(network, size);
+                    s += testWithBatchSizePrime(network, size);
                 } else {
-                    testWithBatchSize(network, size);
+                    s += testWithBatchSize(network, size);
                 }
                 System.gc();
             }
             System.out.println("==================== Ended ==================== ");
 
-            FileWriter fileWriter = null;
             try {
-                fileWriter = (size == 1) ? new FileWriter(network.getName() + "bPuUs.txt") :
-                        new FileWriter(network.getName() + "bPuUs.txt", true);
+                fileWriter = new FileWriter(network.getName() + "bPuUs.txt", true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            assert fileWriter != null;
-            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter = new PrintWriter(fileWriter);
             printWriter.println(size + " " + (s / ratio));
             printWriter.close();
         }

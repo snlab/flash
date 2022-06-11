@@ -93,7 +93,7 @@ The consoleMsg.log provides time break down (Figure 10 in paper).
 
 ```bash
 sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e BatchSize >consoleMsg.log 2>&1 &
-python BatchSize [the folder of logs]
+python3 BatchSize.py [the folder of log files (e.g., ../batchSize)]
 ```
 
 Expected output: 
