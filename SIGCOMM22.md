@@ -78,7 +78,7 @@ sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 Expected output:
 The evaluation generates a file "overall.txt" lists data corresponding to Table 3 and Figure 6 in paper. 
-The consoleMsg.log provides more detailed log.
+The consoleMsg.log provides more detailed information.
 
 ![](figures/overall.png)
 
@@ -101,7 +101,7 @@ The first line of command generates few log files, e.g., "LNet0bPuUs.txt". Then 
 
 ![](figures/batchSize.png)
 
-Some settings in Table 3 and Figure 6 are not solved within 1-hour and are not executed by the commands above.
+Some settings in Table 3 and Figure 6 are not solved within 1-hour and are included in the commands above.
 For people who have interest, we suggest modifying the code to try different settings (see evaluation.Overall.dead()).
 Here is a starting point.
 ```bash
