@@ -103,7 +103,6 @@ public class Table3 {
     public static void evaluateOnSnapshot(Network network, boolean tryDeletanet, boolean tryApkeep, boolean tryFlash) {
         System.gc();
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
-        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
         s1 = s2 = s3 = s4 = 0;
@@ -117,9 +116,16 @@ public class Table3 {
         }
         System.out.println("==================== Ended ==================== ");
         if (tryApkeep && !(omit && network.getName().equals("LNet1"))) { // skip LNet1 for APKeep*, which cannot be finished in time
-            for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts());
+            boolean eagerMerge = true;
+            if (network.getName().equals("LNet*")) {
+                // APKeep's paper claims to delay merge for better performance
+                // we did not do fine-grained tuning and only try two options: "no delay" and "delay to inf"
+                // we found in dataset "LNet*", the merge needs to be delayed; otherwise it cannot finish in 1-hour
+                eagerMerge = false;
+            }
+            for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts(), eagerMerge);
             System.out.println("==================== Warmed ==================== ");
-            for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts());
+            for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts(), eagerMerge);
             System.out.println("==================== Ended ==================== ");
         }
         if (tryFlash) {
@@ -209,6 +215,7 @@ public class Table3 {
 
     private static double deltanet(Network network) {
         System.gc();
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         AtomVerifier verifier = new AtomVerifier();
         for (Rule rule : network.getInitialRules()) {
             verifier.insertRule(rule);
@@ -225,19 +232,20 @@ public class Table3 {
         return verifier.printTime(network.getInitialRules().size() * (testDeletion ? 2 : 1));
     }
 
-    private static double apkeep(Network network, Ports base) {
+    private static double apkeep(Network network, Ports base, boolean eagerMerge) {
         System.gc();
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         APVerifier verifier = new APVerifier(network, base);
         for (Rule rule : network.getInitialRules()) {
             verifier.insertRule(rule);
-            verifier.update(true);
+            verifier.update(eagerMerge);
         }
         m2 += printMemory();
         System.out.println("APKeep* #EC (full snapshot): " + verifier.predSize());
         if (testDeletion) {
             for (Rule rule : network.getInitialRules()) {
                 verifier.removeRule(rule);
-                verifier.update(true);
+                verifier.update(eagerMerge);
             }
             System.out.println("APKeep* #EC (deleted to empty): " + verifier.predSize());
         }
@@ -247,6 +255,7 @@ public class Table3 {
 
     private static double seq(Network network, boolean asBatch) {
         System.gc();
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         InverseModel verifier = new InverseModel(network, new PersistentPorts());
         if (asBatch) {
             ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(network.getInitialRules());
@@ -279,9 +288,7 @@ public class Table3 {
 
     public static void evaluateOnUpdatesSequence(Network network) { // Table 3
         System.gc();
-        System.runFinalization();
         System.out.println("# Updates: " + network.updateSequence.size() + " # Switches: " + network.getAllDevices().size());
-        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
         s1 = s2 = s3 = s4 = 0;
@@ -313,6 +320,7 @@ public class Table3 {
 
     private static double deltanetPrime(Network network) {
         System.gc();
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         AtomVerifier verifier = new AtomVerifier();
         for (Pair<Boolean, Rule> pair : network.updateSequence) {
             Rule rule = pair.getSecond();
@@ -330,6 +338,7 @@ public class Table3 {
 
     private static double apkeepPrime(Network network, Ports base) {
         System.gc();
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         APVerifier verifier = new APVerifier(network, base);
         for (Pair<Boolean, Rule> pair : network.updateSequence) {
             Rule rule = pair.getSecond();
@@ -349,6 +358,7 @@ public class Table3 {
 
     private static double seqPrime(Network network, boolean asBatch) {
         System.gc();
+        memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         InverseModel verifier = new InverseModel(network, new PersistentPorts());
         if (asBatch) {
             ArrayList<Rule> insertion = new ArrayList<>(), deletion = new ArrayList<>();
