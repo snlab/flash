@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.snlab.flash.ModelManager.Ports.Ports;
 import org.snlab.flash.ModelManager.BDDEngine;
-import org.snlab.flash.ModelManager.IndexedRules;
+import org.snlab.flash.ModelManager.Rules;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
@@ -27,7 +27,7 @@ class Change {
 public class APVerifier {
     public final BDDEngine bddEngine;
     private final ArrayList<Change> changes;
-    private final HashMap<Device, IndexedRules> deviceToRules;
+    private final HashMap<Device, Rules> deviceToRules;
 
     private int size = 32;
     private final HashMap<Port, HashSet<Integer>> portToPreds;
@@ -59,7 +59,7 @@ public class APVerifier {
         this.ruleToBddMatch = new HashMap<>();
 
         // Relabel every device as the index used by Ports, starting from 0
-        for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new IndexedRules());
+        for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new Rules());
 
         // Each device has a default rule with default action.
         ArrayList<Port> key = new ArrayList<>();
@@ -81,7 +81,7 @@ public class APVerifier {
         s1 -= System.nanoTime();
         ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcSuffix()));
         ruleToHits.put(rule, bddEngine.ref(ruleToBddMatch.get(rule)));
-        IndexedRules targetNode = deviceToRules.get(rule.getDevice());
+        Rules targetNode = deviceToRules.get(rule.getDevice());
 
         for (Rule r : targetNode.getAllOverlappingWith(rule, size)) {
             if (r.getPriority() > rule.getPriority()) {
@@ -114,7 +114,7 @@ public class APVerifier {
         if (ruleToBddMatch.get(rule) == null) return; // cannot find the rule to be removed
 
         s1 -= System.nanoTime();
-        IndexedRules targetNode = deviceToRules.get(rule.getDevice());
+        Rules targetNode = deviceToRules.get(rule.getDevice());
 
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
