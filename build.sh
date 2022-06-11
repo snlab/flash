@@ -60,7 +60,7 @@ case $CMD in
         install_deps
         exit
     ;;
-    "get_datsets")
+    "get_datasets")
         get_datasets
         ;;
     "jar")
