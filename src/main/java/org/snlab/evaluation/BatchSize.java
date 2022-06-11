@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class BatchSize {
     private static final boolean testDeletion = true;
-    private static final int warmupRepeat = 3, testRepeat = 1;
+    private static final int warmupRepeat = 1, testRepeat = 1;
 
     public static void run() {
         Network network = LNetNetwork.getLNET().setName("LNet0");
@@ -76,7 +76,7 @@ public class BatchSize {
         System.out.println("==================== Warmed ==================== ");
 
         for (int size = 1; size <= tot; size ++) {
-            if (cnt > 40 && size < tot) continue;
+            if (cnt > 30 && size < tot) continue;
             if (size > 10 && size != tot) {
                 if ((tot / size) < b) {
                     b = tot / size;
