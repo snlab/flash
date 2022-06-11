@@ -29,17 +29,25 @@ public class Table3 {
     private static final double byte2MB = 1024L * 1024L;
     private static final boolean testDeletion = true;
     private static final int warmupRepeat = 0, testRepeat = 1;
-    private static boolean omit;
+    private static boolean omit = true;
 
     private static double memoryBefore, ratio;
 
-    public static void figure6() { // None of them can finish in 1-hour without subspace partition
-        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, true, false);
-        evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, true, false);
+    // In this function, each line is a setting that cannot be finished within 1 hour
+    public static void dead() {
+        // Table 3
+        Table3.omit = false;
+        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
+        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet*"), false, true, false);
+
+        // Figure 6: settings w/o subspace
+        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, false, false);
+        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
+        evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, false, false);
+        evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), false, true, false);
     }
 
-    public static void run(boolean omit) {
-        Table3.omit = omit;
+    public static void run() {
 
         Network network = LNetNetwork.getLNET().setName("LNet0");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
@@ -115,18 +123,22 @@ public class Table3 {
             for (int i = 0; i < testRepeat; i++) s1 += deltanet(network);
         }
         System.out.println("==================== Ended ==================== ");
-        if (tryApkeep && !(omit && network.getName().equals("LNet1"))) { // skip LNet1 for APKeep*, which cannot be finished in 1-hour
-            boolean eagerMerge = true;
-            if (network.getName().equals("LNet*")) {
-                // APKeep's paper claims to delay merge for better performance
-                // we did not do fine-grained tuning and only try two options: "no delay" and "delay to inf"
-                // we found in dataset "LNet*", the merge needs to be delayed; otherwise it cannot finish in 1-hour
-                eagerMerge = false;
+        if (tryApkeep) {
+            if (omit && (network.getName().equals("LNet1") || network.getName().equals("LNet*"))) {
+                // skip LNet1 for APKeep*, which cannot be finished in 1-hour
+            } else {
+                boolean eagerMerge = true;
+                if (network.getName().equals("LNet*")) {
+                    // APKeep's paper claims to delay merge for better performance
+                    // we did not do fine-grained tuning and only try two options: "no delay" and "delay to inf"
+                    // we found in dataset "LNet*", the merge needs to be delayed; otherwise it cannot finish in 1-hour
+                    eagerMerge = false;
+                }
+                for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts(), eagerMerge);
+                System.out.println("==================== Warmed ==================== ");
+                for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts(), eagerMerge);
+                System.out.println("==================== Ended ==================== ");
             }
-            for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts(), eagerMerge);
-            System.out.println("==================== Warmed ==================== ");
-            for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts(), eagerMerge);
-            System.out.println("==================== Ended ==================== ");
         }
         if (tryFlash) {
             for (int i = 0; i < warmupRepeat; i++) seq(network, true);
