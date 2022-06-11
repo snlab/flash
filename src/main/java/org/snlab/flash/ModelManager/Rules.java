@@ -16,14 +16,15 @@ public class Rules {
         if (x.getPriority() == y.getPriority()) return true;
 
         if (x.getPrefix() > 0 && y.getPrefix() > 0) {
-            long maskX = (1L << x.getPrefix()) - 1, maskY = (1L << y.getPrefix()) - 1;
-            if ((x.getPrefix() & maskX) != (y.getPrefix() & maskY)) return true;
+            long maskX = (1L << x.getPrefix()) - 1, maskY = (1L << y.getPrefix()) - 1, mask = maskX & maskY;
+            if ((x.getPrefix() & mask) != (y.getPrefix() & mask)) return true;
         }
 
         if (x.getSrcSuffix() > 0 && y.getSrcSuffix() > 0) {
-            long maskX = (1L << x.getSrcSuffix() ) - 1, maskY = (1L << y.getSrcSuffix()) - 1;
-            if ((x.getSrc() & maskX) != (y.getSrc() & maskY)) return true;
+            long maskX = (1L << x.getSrcSuffix() ) - 1, maskY = (1L << y.getSrcSuffix()) - 1, mask = maskX & maskY;
+            if ((x.getSrc() & mask) != (y.getSrc() & mask)) return true;
         }
+
         return false;
     }
 
@@ -34,10 +35,14 @@ public class Rules {
      */
     public ArrayList<Rule> getAllOverlappingWith(Rule rule, int size) {
         ArrayList<Rule> ret = new ArrayList<>();
+
+        // For the purpose of evaluation, we use a generic linear scan;
+        // Instead of a Tire tree which is optimized for lpm-match.
         for (Rule r : rules) {
             if (conflicts(r, rule)) continue;
-            ret.add(rule);
+            ret.add(r);
         }
+
         return ret;
     }
 
