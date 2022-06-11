@@ -24,6 +24,7 @@ public class Rules {
             long maskX = (1L << x.getSrcSuffix() ) - 1, maskY = (1L << y.getSrcSuffix()) - 1, mask = maskX & maskY;
             if ((x.getSrc() & mask) != (y.getSrc() & mask)) return true;
         }
+
         return false;
     }
 
@@ -39,7 +40,7 @@ public class Rules {
         // Instead of a Tire tree which is optimized for lpm-match.
         for (Rule r : rules) {
             if (conflicts(r, rule)) continue;
-            ret.add(rule);
+            ret.add(r);
         }
 
         return ret;
