@@ -75,14 +75,6 @@ options:
 
 ## Effects of CE2D
 ### CE2D on OpenR dataset
-Dataset description:
-
-To ease the evaluation process, we provide a synthesized snapshot of FIB update trace of OpenR using the topology of Internet2.
-Each line in `datasets/I2OpenR/trace.txt` uses the follwing format:
-```
-switchName epochID timestamp prefix mask egress
-```
-Which is read as "the verifier receives a FIB update from a switch {switchName} at {timestamp}, the FIB update is for IP {prefix}/{mask} going to port {egress} and tagged with {epochID}".
 
 Run the evaluation:
 

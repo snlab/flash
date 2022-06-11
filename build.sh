@@ -7,6 +7,10 @@
 compile() {
     mvn package
 }
+
+pythonDep() {
+    python -m pip install matplotlib seaborn
+}
 # mkdir -p $DIR
 compile()
 # cp target/flash-public.jar $DIR/flash.jar
