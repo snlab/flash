@@ -53,34 +53,26 @@ public class Overall {
             evaluateOnSnapshot(network, false, true, false);
         }
 
-        System.out.println("2. Try APKeep* (with 'merge-delay = 0') on LNet* Subspace? (y/n)");
-        ans = scanner.nextLine();
-        if (ans.equals("y")) {
-            Network network = LNetNetwork.getLNETStar().setName("LNet*");
-            network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
-            evaluateOnSnapshot(network, false, true, false);
-        }
-
         // Figure 6: settings w/o subspace
-        System.out.println("3. Try Deltanet* (w/o subspace) on LNet1? (y/n)");
+        System.out.println("2. Try Deltanet* (w/o subspace) on LNet1? (y/n)");
         ans = scanner.nextLine();
         if (ans.equals("y")) {
             evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, false, false);
         }
 
-        System.out.println("4. Try Deltanet* (w/o subspace) on LNet*? (y/n)");
+        System.out.println("3. Try Deltanet* (w/o subspace) on LNet*? (y/n)");
         ans = scanner.nextLine();
         if (ans.equals("y")) {
             evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, false, false);
         }
 
-        System.out.println("5. Try APKeep* (w/o subspace) on LNet1? (y/n)");
+        System.out.println("4. Try APKeep* (w/o subspace) on LNet1? (y/n)");
         ans = scanner.nextLine();
         if (ans.equals("y")) {
             evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
         }
 
-        System.out.println("6. Try APKeep* (w/o subspace) on LNet*? (y/n)");
+        System.out.println("5. Try APKeep* (w/o subspace) on LNet*? (y/n)");
         ans = scanner.nextLine();
         if (ans.equals("y")) {
             evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), false, true, false);
@@ -166,16 +158,9 @@ public class Overall {
             if (omit && network.getName().equals("LNet1")) {
                 // skip LNet1 for APKeep*, which cannot be finished in 1-hour
             } else {
-                boolean eagerMerge = true;
-                if (omit && network.getName().equals("LNet*")) {
-                    // APKeep's paper claims to delay merge for better performance
-                    // we did not do fine-grained tuning and only try two options: "no delay" and "delay to inf"
-                    // we found in dataset "LNet*", the merge needs to be delayed; otherwise it cannot finish in 1-hour
-                    eagerMerge = false;
-                }
-                for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts(), eagerMerge);
+                for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts(),true);
                 System.out.println("==================== Warmed ==================== ");
-                for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts(), eagerMerge);
+                for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts(), true);
                 System.out.println("==================== Ended ==================== ");
             }
         }

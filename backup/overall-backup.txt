@@ -16,10 +16,16 @@ LNet1 # Rules: 297792 # Switches: 6016
  Memory Usage: 2554.410514831543, 0.0, 288.8116760253906 Mb.
 
 
-
-LNet* # Rules: 2675712 # Switches: 6016
+LNet* # Rules: 2675712 # Switches: 6016  <=== eagerMerge
 ============= Delta-net*, APKeep*, Flash
- Total time: 67.126757296, 791.724287031, 8.1149888245 s.
+ Total time: 0.0, 2372.078791378, 0.0 s.
+ Operations: 0.0, 714.40103, 0.0 1e5.
+ Memory Usage: 0.0, 2893.7897567749023, 0.0 Mb.
+
+
+LNet* # Rules: 2675712 # Switches: 6016  <=== APKeepStar use delayedMerge
+============= Delta-net*, APKeep*, Flash
+ Total time: 67.126757296, 791.724287031, 8.1149888245 s. 
  Operations: 771.31776, 43399.96496, 110.52671 1e5.
  Memory Usage: 6299.466239929199, 4879.377395629883, 2857.388282775879 Mb.
 
