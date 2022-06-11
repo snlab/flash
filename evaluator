@@ -1,5 +1,5 @@
 #!/bin/python3
-import argparse
+import argparse, os
 from py.I2LongTail import I2LongTail
 from py.I2CE2D import I2CE2D
 from py.I2EarlyDetection import I2EarlyDetection
@@ -22,3 +22,12 @@ if __name__ == '__main__':
         I2LongTail(output)
     elif eval == 'LNet1AllPair':
         LNet1AllPair(output)
+    elif eval == 'overall':
+        os.system('sudo nohup java -Xmx28g -jar flash.jar -e OverallPerformance >consoleMsg.log 2>&1 &')
+    elif eval == 'breakdown':
+        os.system('sudo nohup java -Xmx28g -jar flash.jar -e Breakdown >consoleMsg.log 2>&1 &')
+    elif eval == 'batchSize':
+        os.system('sudo nohup java -Xmx28g -jar flash.jar -e BatchSize >consoleMsg.log 2>&1 &')
+    elif eval == 'deadSettings':
+        os.system('sudo nohup java -Xmx28g -jar flash.jar -e DeadSettings >consoleMsg.log 2>&1 &')
+        
