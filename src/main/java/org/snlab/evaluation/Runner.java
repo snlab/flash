@@ -15,7 +15,9 @@ public class Runner {
             Table3.run();
         } else if (Main.evalOptions.eval.equals("BatchSize")) {
             Figure9.run();
-        } else if (Main.evalOptions.eval.equals("deadSettings")) {
+        } else if (Main.evalOptions.eval.equals("Breakdown")) {
+            Table3.breakdown();
+        } else if (Main.evalOptions.eval.equals("DeadSettings")) {
             Table3.dead();
         } else {
             System.out.println("Unknown evaluation name: " + Main.evalOptions.eval);

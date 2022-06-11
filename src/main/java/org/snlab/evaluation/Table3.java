@@ -33,6 +33,13 @@ public class Table3 {
 
     private static double memoryBefore, ratio;
 
+    public static void breakdown() {
+        Network network = I2Network.getNetwork().setName("Internet2");
+        apkeep(network, new ArrayPorts(), true);
+        seq(network, false);
+        seq(network, true);
+    }
+
     // In this function, each line is a setting that cannot be finished within 1 hour
     public static void dead() {
         // Table 3

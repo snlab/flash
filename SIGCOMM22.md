@@ -71,10 +71,40 @@ options:
 # SIGCOMM22 Evaluations
 
 ## Effects of Fast IMT
-> TBD export MAVEN_OPTS="-Xmx4g -Dfile.encoding=UTF-8"
+Run the evaluation:
 ```bash
-nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e All >consoleMsg.log 2>&1 &
+sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e OverallPerformance >consoleMsg.log 2>&1 &
 ```
+
+Expected output:
+The evaluation generates a file "overall.txt" lists data corresponding to Table 3 and Figure 6 in paper. 
+The consoleMsg.log provides more detailed log.
+
+```bash
+sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e Breakdown >consoleMsg.log 2>&1 &
+```
+
+Expected output:
+The consoleMsg.log provides time break down (Figure 10 in paper).
+
+![](figures/breakdown.png)
+
+```bash
+sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e BatchSize >consoleMsg.log 2>&1 &
+python TBD
+```
+
+Expected output: 
+The first line of command generates few log files, e.g., "LNet0bPuUs.txt". Then one can use the second command to draw a figure (Figure 9 in table).
+
+![](figures/batchSize.png)
+
+Some settings in Table 3 and Figure 6 cannot solved within 1-hour and are not executed by the commands above.
+For people who have interest, we suggest modifying the code to try different settings (see evaluation.Table3.dead()).
+Here is a starting point to try.
+```bash
+sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e DeadSettings >consoleMsg.log 2>&1 &
+````
 
 ## Effects of CE2D
 ### CE2D on OpenR dataset
