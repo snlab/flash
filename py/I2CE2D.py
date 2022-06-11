@@ -6,7 +6,7 @@ import seaborn as sns
 class I2CE2D:
     def __init__(self, output=None) -> None:
         plt.figure(figsize=(8, 4))
-        os.system('mvn exec:java -Dexec.args="-e I2CE2D"')
+        os.system('java -jar flash.jar -e I2CE2D')
         self.draw_epoch('dataset/I2OpenR/trace.txt')
         self.draw_epoch('dataset/I2OpenR/update.txt')
         self.draw_loop_check('tmp/log.txt')
@@ -14,7 +14,8 @@ class I2CE2D:
         plt.grid()
         plt.xlim(-5)
         if output:
-            plt.savefig(output)
+            os.makedirs('output', exist_ok=True)
+            plt.savefig('output/%s.png' % output)
         else:
             plt.show()
 

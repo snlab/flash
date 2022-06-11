@@ -5,3 +5,4 @@ TODO.md
 tmp/
 __pycache__
 *.jar
+output/

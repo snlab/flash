@@ -4,7 +4,7 @@ import seaborn as sns
 
 class LNet1AllPair:
     def __init__(self, output=None) -> None:
-        os.system('mvn exec:exec -Dexec.args="-e LNet1AllPair"')
+        os.system('java -jar flash.jar -e LNet1AllPair')
         x = []
         for line in open('tmp/log.txt'):
             if 'time' in line:
@@ -18,6 +18,7 @@ class LNet1AllPair:
         sns.ecdfplot(x)
         plt.grid()
         if output:
-            plt.savefig(output)
+            os.makedirs('output', exist_ok=False)
+            plt.savefig('output/%s.png' % output)
         else:
             plt.show()

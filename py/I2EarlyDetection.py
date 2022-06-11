@@ -4,7 +4,7 @@ import seaborn as sns
 
 class I2EarlyDetection:
     def __init__(self, output=None) -> None:
-        os.system('mvn exec:java -Dexec.args="-e I2EarlyDetection"')
+        os.system('java -jar flash.jar -e I2EarlyDetection')
         x = []
         with open('tmp/log.txt') as f:
             lines = f.readlines()
@@ -25,6 +25,7 @@ class I2EarlyDetection:
         sns.ecdfplot(x)
         plt.grid()
         if output:
-            plt.savefig(output)
+            os.makedirs('output', exist_ok=True)
+            plt.savefig('output/%s.png' % output)
         else:
             plt.show()

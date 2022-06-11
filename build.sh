@@ -1,11 +1,10 @@
 #!/bin/bash
-# DIR=sigcomm22-eval
-# if [ $# -eq 1 ]
-# then
-#     DIR=$1
-# fi
+datasets() {
+    echo "Downloading datasets..."
+    git clone https://gitee.com/gdtongji/dataset
+}
 compile() {
-    mvn package
+    mvn assembly:assembly
 }
 
 pythonDep() {
@@ -13,4 +12,5 @@ pythonDep() {
 }
 # mkdir -p $DIR
 compile()
-# cp target/flash-public.jar $DIR/flash.jar
+pythonDep()
+cp target/flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar ./flash.jar
