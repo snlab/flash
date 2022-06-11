@@ -33,22 +33,13 @@ public class Table3 {
 
     private static double memoryBefore, ratio;
 
-    public static void figure6() { // None of them can finish in time without subspace partition
+    public static void figure6() { // None of them can finish in 1-hour without subspace partition
         evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, true, false);
         evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, true, false);
     }
 
     public static void run(boolean omit) {
         Table3.omit = omit;
-
-        try {
-            evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
-        evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
-        System.gc();
 
         Network network = LNetNetwork.getLNET().setName("LNet0");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
@@ -66,6 +57,15 @@ public class Table3 {
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
         network = null;
+        System.gc();
+
+        try {
+            evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
+        evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
         System.gc();
     }
 
@@ -115,7 +115,7 @@ public class Table3 {
             for (int i = 0; i < testRepeat; i++) s1 += deltanet(network);
         }
         System.out.println("==================== Ended ==================== ");
-        if (tryApkeep && !(omit && network.getName().equals("LNet1"))) { // skip LNet1 for APKeep*, which cannot be finished in time
+        if (tryApkeep && !(omit && network.getName().equals("LNet1"))) { // skip LNet1 for APKeep*, which cannot be finished in 1-hour
             boolean eagerMerge = true;
             if (network.getName().equals("LNet*")) {
                 // APKeep's paper claims to delay merge for better performance
