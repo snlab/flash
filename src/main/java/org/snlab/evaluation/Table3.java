@@ -29,10 +29,12 @@ public class Table3 {
     private static final double byte2MB = 1024L * 1024L;
     private static final boolean testDeletion = true;
     private static final int warmupRepeat = 0, testRepeat = 1;
+    private static boolean omit;
 
     private static double memoryBefore, ratio;
 
-    public static void run() {
+    public static void run(boolean omit) {
+        Table3.omit = omit;
         try {
             evaluateOnSequence(Airtel1Network.getNetwork().setName("Airtel1"));
         } catch (IOException e) {
@@ -49,11 +51,9 @@ public class Table3 {
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
 
-        /* heap exceed
         network = LNetNetwork.getLNET1().setName("LNet1");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
-        evaluateOn(network);
-         */
+        evaluateOnSnapshot(network);
 
         network = null;
         System.gc();
@@ -100,7 +100,7 @@ public class Table3 {
         System.out.println("==================== Loaded ==================== ");
         for (int i = 0; i < testRepeat; i ++) s1 += deltanet(network);
         System.out.println("==================== Ended ==================== ");
-        if (!network.getName().equals("LNet1")) { // skip LNet1 for APKeep*, which cannot be finished in time
+        if (omit && !network.getName().equals("LNet1")) { // skip LNet1 for APKeep*, which cannot be finished in time
             for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts());
             System.out.println("==================== Loaded ==================== ");
             for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts());

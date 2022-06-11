@@ -81,7 +81,7 @@ public class InverseModel {
                 continue;
             }
             inserted.add(rule);
-            ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
+            ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcSuffix()));
             deviceToRules.get(rule.getDevice()).insert(rule, size);
         }
         for (Rule rule : deleted) deviceToRules.get(rule.getDevice()).remove(rule, size);

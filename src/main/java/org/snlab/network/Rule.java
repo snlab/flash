@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 public class Rule {
-    private int src, srcPrefix;
+    private int src, srcSuffix;
     private BigInteger match;
 //    private BigInteger dstIp;
     private int prefix, priority;
@@ -23,17 +23,17 @@ public class Rule {
         this.prefix = prefix;
         this.priority = priority;
         this.outPort = outPort;
-        this.srcPrefix = 0;
+        this.src = this.srcSuffix = 0;
     }
 
-    public Rule(Device device, int src, int srcPrefix, long ipv4, int prefix, Port outPort) {
+    public Rule(Device device, int src, int srcSuffix, long ipv4, int prefix, Port outPort) {
         this.device = device;
         this.match = BigInteger.valueOf(ipv4);
         this.prefix = prefix;
         this.priority = prefix;
         this.outPort = outPort;
         this.src = src;
-        this.srcPrefix = srcPrefix;
+        this.srcSuffix = srcSuffix;
     }
 
     public void setPriority(int priority) {
@@ -75,8 +75,8 @@ public class Rule {
         return this.src;
     }
 
-    public int getSrcPrefix() {
-        return this.srcPrefix;
+    public int getSrcSuffix() {
+        return this.srcSuffix;
     }
 
     @Override

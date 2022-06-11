@@ -94,7 +94,7 @@ public class TrieRules {
         if (ret != null) t.read(rule, ret, size);
 
         long srcIp = rule.getSrc();
-        for (int i = 0; i < rule.getSrcPrefix(); i++) {
+        for (int i = 0; i < rule.getSrcSuffix(); i++) {
             long bit = (srcIp >> i) & 1;
             t = t.buildNext(bit == 0 ? 0 : 1);
             if (ret != null) t.read(rule, ret, size);

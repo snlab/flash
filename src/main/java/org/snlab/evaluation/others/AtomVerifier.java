@@ -56,8 +56,11 @@ public class AtomVerifier {
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());
         ArrayList<Pair<Long, Long>> ret = new ArrayList<>();
 
-        for (int i = 0; i < (1 << r.getSrcPrefix()); i ++) {
-            createInterval(L + i * rH(0, r.getSrcPrefix()), H + i * rH(0, r.getSrcPrefix()), ret);
+        // for lpm-match, each rule is represented as a single interval;
+        // for multi-field extension, each rule is represented as many intervals.
+        for (int i = 0; i < (1 << r.getSrcSuffix()); i ++) {
+            long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
+            createInterval(L + srcEncoding, H + srcEncoding, ret);
         }
 
         return ret;
@@ -71,9 +74,11 @@ public class AtomVerifier {
         TreeSet<Long> ret = new TreeSet<>();
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());  // [L, H)
 
-        for (int i = 0; i < (1 << r.getSrcPrefix()); i ++) {
-            ret.addAll(atoms.subSet(L + i * rH(0, r.getSrcPrefix()), H + i * rH(0, r.getSrcPrefix())));
+        for (int i = 0; i < (1 << r.getSrcSuffix()); i ++) {
+            long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
+            ret.addAll(atoms.subSet(L + srcEncoding, H + srcEncoding));
         }
+
         return ret;
     }
 

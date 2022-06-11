@@ -79,7 +79,7 @@ public class APVerifier {
 
     public void insertRule(Rule rule) {
         s1 -= System.nanoTime();
-        ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcPrefix()));
+        ruleToBddMatch.put(rule, bddEngine.encodeIpv4(rule.getMatch(), rule.getPrefix(), rule.getSrc(), rule.getSrcSuffix()));
         ruleToHits.put(rule, bddEngine.ref(ruleToBddMatch.get(rule)));
         TrieRules targetNode = deviceToRules.get(rule.getDevice());
 
