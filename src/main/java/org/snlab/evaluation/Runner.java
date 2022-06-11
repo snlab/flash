@@ -27,5 +27,6 @@ public class Runner {
     public static void main(String[] args) {
         // HealthCheck.run();
         Table3.run(true);
+        Figure9.run();
     }
 }

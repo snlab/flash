@@ -7,6 +7,10 @@ import org.snlab.network.Rule;
 
 // Build tire-index for prefix-match to reduce the scope of "overlapped rules".
 // Notice the ternary-match is allowed, but still indexed by it prefix-part (no prefix is concerned as a 0-length prefix).
+//
+// It works best for dataset whose
+// (1) most rules use lpm-match (makes the index efficient)
+// and (2) some rules use ternary-match (lpm-specific approach does no work).
 public class IndexedRules {
     HashSet<Rule> rules;
     IndexedRules left, right, dst;

@@ -21,14 +21,11 @@ public class Figure9 {
     private static final int warmup = 0, test = 1;
 
     public static void run() {
-        batchSize(I2Network.getNetwork().setName("Internet2"));
-        batchSize(StanfordNetwork.getNetwork().setName("Stanford"));
-        try {
-            batchSize(Airtel1Network.getNetwork().setName("Airtel1"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         Network network = LNetNetwork.getLNET().setName("LNet0");
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+        batchSize(network);
+
+        network = LNetNetwork.getLNET1().setName("LNet1");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         batchSize(network);
 
@@ -36,11 +33,15 @@ public class Figure9 {
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         batchSize(network);
 
-        /* heap exceed
-        network = LNetNetwork.getLNET1().setName("LNet1");
-        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
-        batchSize(network);
-         */
+        try {
+            batchSize(Airtel1Network.getNetwork().setName("Airtel1"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        batchSize(StanfordNetwork.getNetwork().setName("Stanford"));
+
+        batchSize(I2Network.getNetwork().setName("Internet2"));
     }
 
     private static void batchSize(Network network) {
