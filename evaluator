@@ -1,5 +1,4 @@
-
-#!/bin/python
+#!/bin/python3
 import argparse
 from py.I2LongTail import I2LongTail
 from py.I2CE2D import I2CE2D

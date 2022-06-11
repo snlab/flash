@@ -133,7 +133,7 @@ Expected output:
 The evaluation generates a CDF figuer in `output/LNet1AllPair.png` (Figure 8 in paper).
 
 
-![](figures/allpair.png)
+![](figures/LNet1AllPair.png)
 
 ***Note***:
 The CDF line of the above figure is smoother than the Figure 8 of the paper due to the code cleaning up. We'll update Figure 8 to the newer result.
