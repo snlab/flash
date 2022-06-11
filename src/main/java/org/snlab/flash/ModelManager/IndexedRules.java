@@ -12,7 +12,7 @@ import org.snlab.network.Rule;
 // Notice ternary-match is still allowed, but we do not build index on it.
 //
 // This index is used by both of APKeepStar and Flash.
-// It has performance impact on Internet2 dataset (while a linear scanning is fine for other dataset).
+// It has performance impact on Internet2 dataset (while a linear scanning is fine for other datasets).
 public class IndexedRules {
     HashSet<Rule> rules;
     IndexedRules left, right, dst;
