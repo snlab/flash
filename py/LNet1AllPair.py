@@ -18,7 +18,7 @@ class LNet1AllPair:
         sns.ecdfplot(x)
         plt.grid()
         if output:
-            os.makedirs('output', exist_ok=False)
+            os.makedirs('output', exist_ok=True)
             plt.savefig('output/%s.png' % output)
         else:
             plt.show()

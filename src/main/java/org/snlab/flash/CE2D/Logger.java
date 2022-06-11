@@ -1,7 +1,10 @@
 package org.snlab.flash.CE2D;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,11 @@ public class Logger {
     }
 
     public void writeFile() {
+        if(!Files.exists(Path.of(filename))) {
+            File f = new File(filename);
+            f.getParentFile().mkdirs();
+        }
+        
         try {
             FileWriter writer = new FileWriter(filename, false);
             BufferedWriter bufferedWriter = new BufferedWriter(writer);
