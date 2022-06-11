@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Table3 {
+public class Overall {
     private static final double byte2MB = 1024L * 1024L;
     private static final boolean testDeletion = true;
     private static final int warmupRepeat = 0, testRepeat = 1;
@@ -43,7 +43,7 @@ public class Table3 {
     // In this function, each line is a setting that cannot be finished within 1 hour
     public static void dead() {
         // Table 3
-        Table3.omit = false;
+        Overall.omit = false;
         evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet*"), false, true, false);
         evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
 

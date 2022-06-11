@@ -12,13 +12,13 @@ public class Runner {
         } else if (Main.evalOptions.eval.equals("LNet1AllPair")) {
             LNet1AllPair.run();
         } else if (Main.evalOptions.eval.equals("OverallPerformance")) {
-            Table3.run();
+            Overall.run();
         } else if (Main.evalOptions.eval.equals("BatchSize")) {
-            Figure9.run();
+            BatchSize.run();
         } else if (Main.evalOptions.eval.equals("Breakdown")) {
-            Table3.breakdown();
+            Overall.breakdown();
         } else if (Main.evalOptions.eval.equals("DeadSettings")) {
-            Table3.dead();
+            Overall.dead();
         } else {
             System.out.println("Unknown evaluation name: " + Main.evalOptions.eval);
         }

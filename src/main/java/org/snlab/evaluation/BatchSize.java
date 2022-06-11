@@ -16,9 +16,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class Figure9 {
+public class BatchSize {
     private static final boolean testDeletion = true;
     private static final int warmup = 3, test = 1;
+
+    public static void main(String[] args) throws IOException {
+        Network network = Airtel1Network.getNetwork().setName("Airtel1");
+        testWithBatchSizePrime(network, 1);
+        testWithBatchSizePrime(network, 2);
+        testWithBatchSizePrime(network, 3);
+    }
 
     public static void run() {
         Network network = LNetNetwork.getLNET().setName("LNet0");
@@ -62,6 +69,8 @@ public class Figure9 {
 
         for (int size = 1; size <= tot; size ++) {
             s = 0;
+
+            if (size >= 10) continue; // FIXME short-cut for quick test
 
             if (size > 100 && size != tot) {
                 if ((tot / size) < b) {
@@ -120,7 +129,7 @@ public class Figure9 {
         }
         if (testDeletion) {
             cnt = 0;
-            System.out.println("#EC: " + verifier.predSize());
+            System.out.println("Flash #EC: " + verifier.predSize());
             for (Rule rule : network.getInitialRules()) {
                 rules.add(rule);
                 cnt ++;
@@ -136,7 +145,7 @@ public class Figure9 {
                 rules.clear();
             }
         }
-        System.out.println("#EC: " + verifier.predSize());
+        System.out.println("Flash #EC: " + verifier.predSize());
         return verifier.printTime(network.getInitialRules().size());
     }
 
