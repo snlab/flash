@@ -39,14 +39,23 @@ public class Table3 {
         Network network = LNetNetwork.getLNET().setName("LNet0");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
+        network = null;
+        System.gc();
+        System.runFinalization();
 
         network = LNetNetwork.getLNET1().setName("LNet1");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
+        network = null;
+        System.gc();
+        System.runFinalization();
 
         network = LNetNetwork.getLNETStar().setName("LNet*");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
+        network = null;
+        System.gc();
+        System.runFinalization();
 
         try {
             evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
@@ -56,7 +65,6 @@ public class Table3 {
         evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
         evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
 
-        network = null;
         System.gc();
         System.runFinalization();
     }

@@ -58,7 +58,8 @@ public class AtomVerifier {
 
         // For lpm-match only, each rule is represented as a single interval;
         // In our multi-field extension (suffix-match on src), each rule is represented as many intervals.
-        for (int i = 0; i < (1 << r.getSrcSuffix()); i ++) {
+        int wildcards = 32 - r.getSrcSuffix();
+        for (int i = 0; i < (1 << wildcards); i ++) {
             long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
             createInterval(L + srcEncoding, H + srcEncoding, ret);
         }
@@ -74,7 +75,8 @@ public class AtomVerifier {
         TreeSet<Long> ret = new TreeSet<>();
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());  // [L, H)
 
-        for (int i = 0; i < (1 << r.getSrcSuffix()); i ++) {
+        int wildcards = 32 - r.getSrcSuffix();
+        for (int i = 0; i < (1 << wildcards); i ++) {
             long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
             ret.addAll(atoms.subSet(L + srcEncoding, H + srcEncoding));
         }
@@ -176,10 +178,8 @@ public class AtomVerifier {
     }
 
     public int atomSize() {
-        int ret = atoms.size() - 1; // MAX -> \inf is not counted
-        // This hack deprecated the issue about "empty atom" (which is also mentioned in ddNF's paper)
-        if (ret <= 0) ret = 1;
-        return ret;
+        // Notice there may be "empty atom" (which is also mentioned in ddNF's paper)
+        return atoms.size() - 1;
     }
 
     /**
@@ -240,6 +240,7 @@ public class AtomVerifier {
             }
         }
 
+        // Notice there may be "empty atom" (which is also mentioned in ddNF's paper)
         if (ret <= 0) ret = 1;
         return ret;
     }
