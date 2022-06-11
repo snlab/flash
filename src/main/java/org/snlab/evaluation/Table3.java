@@ -38,7 +38,6 @@ public class Table3 {
         // Table 3
         Table3.omit = false;
         evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
-        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet*"), false, true, false);
 
         // Figure 6: settings w/o subspace
         evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, false, false);
@@ -124,7 +123,7 @@ public class Table3 {
         }
         System.out.println("==================== Ended ==================== ");
         if (tryApkeep) {
-            if (omit && (network.getName().equals("LNet1") || network.getName().equals("LNet*"))) {
+            if (omit && network.getName().equals("LNet1")) {
                 // skip LNet1 for APKeep*, which cannot be finished in 1-hour
             } else {
                 boolean eagerMerge = true;
