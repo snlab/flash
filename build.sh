@@ -46,7 +46,7 @@ install_deps() {
 
 get_datasets() {
     echo "=== Downloading datasets ==="
-    git clone https://gitee.com/gdtongji/dataset
+    git clone https://bitbucket.org/gdtongji/dataset.git
 }
 
 jar() {
@@ -58,8 +58,7 @@ jar() {
 case $CMD in
     "install_deps")
         install_deps
-        exit
-    ;;
+        ;;
     "get_datasets")
         get_datasets
         ;;
