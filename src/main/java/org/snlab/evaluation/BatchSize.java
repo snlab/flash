@@ -46,6 +46,13 @@ public class BatchSize {
 
     private static void batchSize(Network network) {
         System.out.println("==================== " + network.getName());
+        int tot;
+        if (network.getName().equals("Airtel1")) {
+            tot = network.updateSequence.size();
+        } else {
+            tot = network.getInitialRules().size() * (testDeletion ? 2 : 1);
+        }
+
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(network.getName() + "bPuUs.txt");
@@ -54,17 +61,13 @@ public class BatchSize {
         }
         assert fileWriter != null;
         PrintWriter printWriter = new PrintWriter(fileWriter);
-        if (network.getName().equals("Airtel1")) {
-            printWriter.println(network.updateSequence.size());
-        } else {
-            printWriter.println(network.getInitialRules().size() * (testDeletion ? 2 : 1));
-        }
+        printWriter.println(tot);
         printWriter.close();
 
         final double ratio = 1e9  * (testDeletion ? 2 : 1) * testRepeat;
 
         double s;
-        int tot = network.getInitialRules().size(), b = tot + 1, cnt = 0;
+        int b = tot + 1, cnt = 0;
 
         for (int i = 1; i <= warmupRepeat; i ++) {
             if (network.getName().equals("Airtel1")) {
@@ -76,12 +79,14 @@ public class BatchSize {
         System.out.println("==================== Warmed ==================== ");
 
         for (int size = 1; size <= tot; size ++) {
-            if (size > 10 && size < tot) {
-                if ((tot / size) + 1 < b) {
-                    b = tot / size;
+            if (size < 100) {
+                if ((tot / size) < b) {
+                    b = tot / (size + 1);
                 } else {
                     continue;
                 }
+            } else {
+                size += tot / 50;
             }
 
             cnt ++;
