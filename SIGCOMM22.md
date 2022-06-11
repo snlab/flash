@@ -101,12 +101,12 @@ The first line of command generates few log files, e.g., "LNet0bPuUs.txt". Then 
 
 ![](figures/batchSize.png)
 
-Some settings in Table 3 and Figure 6 are not solved within 1-hour and are included in the commands above.
-For people who have interest, we suggest modifying the code to try different settings (see evaluation.Overall.dead()).
-Here is a starting point.
+
 ```bash
 sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e DeadSettings >consoleMsg.log 2>&1 &
-````
+```
+Expected output:
+It provides an interface to try some settings (in Table 3 and Figure) are not solved within 1-hour.
 
 ## Effects of CE2D
 ### CE2D on OpenR dataset

@@ -20,10 +20,7 @@ import org.snlab.networkLoader.StanfordNetwork;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class Overall {
     private static final double byte2MB = 1024L * 1024L;
@@ -42,16 +39,51 @@ public class Overall {
 
     // In this function, each line is a setting that cannot be finished within 1 hour
     public static void dead() {
+        String ans;
+        Scanner scanner = new Scanner(System.in);
+
         // Table 3
         Overall.omit = false;
-        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet*"), false, true, false);
-        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
+        System.out.println("1. Try APKeep* on LNet1 Subspace? (y/n)");
+        ans = scanner.nextLine();
+        if (ans.equals("y")) {
+            Network network = LNetNetwork.getLNET1().setName("LNet1");
+            network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+            evaluateOnSnapshot(network, false, true, false);
+        }
+
+        System.out.println("2. Try APKeep* (with 'merge-delay = 0') on LNet* Subspace? (y/n)");
+        ans = scanner.nextLine();
+        if (ans.equals("y")) {
+            Network network = LNetNetwork.getLNETStar().setName("LNet*");
+            network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+            evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), false, true, false);
+        }
 
         // Figure 6: settings w/o subspace
-        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, false, false);
-        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
-        evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, false, false);
-        evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), false, true, false);
+        System.out.println("3. Try Deltanet* (w/o subspace) on LNet1? (y/n)");
+        ans = scanner.nextLine();
+        if (ans.equals("y")) {
+            evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, false, false);
+        }
+
+        System.out.println("4. Try Deltanet* (w/o subspace) on LNet*? (y/n)");
+        ans = scanner.nextLine();
+        if (ans.equals("y")) {
+            evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, false, false);
+        }
+
+        System.out.println("5. Try APKeep* (w/o subspace) on LNet1? (y/n)");
+        ans = scanner.nextLine();
+        if (ans.equals("y")) {
+            evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), false, true, false);
+        }
+
+        System.out.println("6. Try APKeep* (w/o subspace) on LNet*? (y/n)");
+        ans = scanner.nextLine();
+        if (ans.equals("y")) {
+            evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), false, true, false);
+        }
     }
 
     public static void run() {
