@@ -25,7 +25,7 @@ import java.util.*;
 public class Overall {
     private static final double byte2MB = 1024L * 1024L;
     private static final boolean testDeletion = true;
-    private static final int warmupRepeat = 1, testRepeat = 1;
+    private static final int warmupRepeat = 0, testRepeat = 1;
     private static boolean omit = true;
 
     private static double memoryBefore, ratio;
