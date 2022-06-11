@@ -80,6 +80,8 @@ Expected output:
 The evaluation generates a file "overall.txt" lists data corresponding to Table 3 and Figure 6 in paper. 
 The consoleMsg.log provides more detailed log.
 
+![](figures/overall.png)
+
 ```bash
 sudo nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e Breakdown >consoleMsg.log 2>&1 &
 ```
