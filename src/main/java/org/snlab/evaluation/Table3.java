@@ -33,6 +33,11 @@ public class Table3 {
 
     private static double memoryBefore, ratio;
 
+    public static void figure6() { // None of them can finish in time without subspace partition
+        evaluateOnSnapshot(LNetNetwork.getLNET1().setName("LNet1"), true, true, false);
+        evaluateOnSnapshot(LNetNetwork.getLNETStar().setName("LNet*"), true, true, false);
+    }
+
     public static void run(boolean omit) {
         Table3.omit = omit;
 
@@ -41,21 +46,18 @@ public class Table3 {
         evaluateOnSnapshot(network);
         network = null;
         System.gc();
-        System.runFinalization();
 
         network = LNetNetwork.getLNET1().setName("LNet1");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
         network = null;
         System.gc();
-        System.runFinalization();
 
         network = LNetNetwork.getLNETStar().setName("LNet*");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
         network = null;
         System.gc();
-        System.runFinalization();
 
         try {
             evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
@@ -66,7 +68,6 @@ public class Table3 {
         evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
 
         System.gc();
-        System.runFinalization();
     }
 
     private static void printLog(String filename, String networkInfo) {
@@ -97,29 +98,37 @@ public class Table3 {
 
     // Table 3
     public static void evaluateOnSnapshot(Network network) {
+        evaluateOnSnapshot(network, true, true, true);
+    }
+
+    public static void evaluateOnSnapshot(Network network, boolean tryDeletanet, boolean tryApkeep, boolean tryFlash) {
         System.gc();
-        System.runFinalization();
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         memoryBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("Memory usage (storing network): " + (memoryBefore / byte2MB) + " M");
 
         s1 = s2 = s3 = s4 = 0;
         t1 = t2 = t3 = t4 = 0;
+        m1 = m2 = m3 = m4 = 0;
         System.out.println("+++++++++++++++++++++ " + network.getName() + " +++++++++++++++++++++");
-        for (int i = 0; i < warmupRepeat; i ++) deltanet(network);
-        System.out.println("==================== Loaded ==================== ");
-        for (int i = 0; i < testRepeat; i ++) s1 += deltanet(network);
+        if (tryDeletanet) {
+            for (int i = 0; i < warmupRepeat; i++) deltanet(network);
+            System.out.println("==================== Loaded ==================== ");
+            for (int i = 0; i < testRepeat; i++) s1 += deltanet(network);
+        }
         System.out.println("==================== Ended ==================== ");
-        if (omit && !network.getName().equals("LNet1")) { // skip LNet1 for APKeep*, which cannot be finished in time
+        if (tryApkeep && !(omit && network.getName().equals("LNet1"))) { // skip LNet1 for APKeep*, which cannot be finished in time
             for (int i = 0; i < warmupRepeat; i++) apkeep(network, new ArrayPorts());
             System.out.println("==================== Loaded ==================== ");
             for (int i = 0; i < testRepeat; i++) s2 += apkeep(network, new ArrayPorts());
             System.out.println("==================== Ended ==================== ");
         }
-        for (int i = 0; i < warmupRepeat; i ++) seq(network, true);
-        System.out.println("==================== Loaded ==================== ");
-        for (int i = 0; i < testRepeat; i ++) s3 += seq(network, true);
-        System.out.println("==================== Ended ==================== ");
+        if (tryFlash) {
+            for (int i = 0; i < warmupRepeat; i++) seq(network, true);
+            System.out.println("==================== Loaded ==================== ");
+            for (int i = 0; i < testRepeat; i++) s3 += seq(network, true);
+            System.out.println("==================== Ended ==================== ");
+        }
         /*
         for (int i = 0; i < warmupRepeat; i ++) seq(network, false);
         System.out.println("==================== Loaded ==================== ");
@@ -205,6 +214,7 @@ public class Table3 {
         for (Rule rule : network.getInitialRules()) {
             verifier.insertRule(rule);
         }
+        m1 += printMemory();
         System.out.println("Deltanet* #Atom (full snapshot): " + verifier.atomSize());
         if (testDeletion) {
             for (Rule rule : network.getInitialRules()) {
@@ -212,7 +222,6 @@ public class Table3 {
             }
             System.out.println("Deltanet* #Atom (deleted to empty): " + verifier.atomSize());
         }
-        m1 += printMemory();
         t1 += verifier.opCnt;
         return verifier.printTime(network.getInitialRules().size() * (testDeletion ? 2 : 1));
     }
@@ -224,6 +233,7 @@ public class Table3 {
             verifier.insertRule(rule);
             verifier.update(true);
         }
+        m2 += printMemory();
         System.out.println("APKeep* #EC (full snapshot): " + verifier.predSize());
         if (testDeletion) {
             for (Rule rule : network.getInitialRules()) {
@@ -232,7 +242,6 @@ public class Table3 {
             }
             System.out.println("APKeep* #EC (deleted to empty): " + verifier.predSize());
         }
-        m2 += printMemory();
         t2 += verifier.bddEngine.opCnt;
         return verifier.printTime(network.getInitialRules().size() * (testDeletion ? 2 : 1));
     }
@@ -243,6 +252,7 @@ public class Table3 {
         if (asBatch) {
             ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(network.getInitialRules());
             verifier.update(conflictFreeChanges);
+            m3 += printMemory();
             if (testDeletion) {
                 System.out.println("Flash #EC (full snapshot): " + verifier.predSize() + " with Batch");
                 conflictFreeChanges = verifier.miniBatch(new ArrayList<>(), network.getInitialRules());
@@ -254,6 +264,7 @@ public class Table3 {
                 ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
                 verifier.update(conflictFreeChanges);
             }
+            m4 += printMemory();
             if (testDeletion) {
                 System.out.println("Flash #EC (deleted to empty): " + verifier.predSize() + " w/o Batch");
                 for (Rule rule : network.getInitialRules()) {
@@ -264,11 +275,6 @@ public class Table3 {
             t4 += verifier.bddEngine.opCnt;
         }
         System.out.println("Flash #EC: " + verifier.predSize() + (asBatch ? " with Batch" : " w/o Batch"));
-        if (asBatch) {
-            m3 += printMemory();
-        } else {
-            m4 += printMemory();
-        }
         return verifier.printTime(network.getInitialRules().size() * (testDeletion ? 2 : 1));
     }
 
@@ -281,6 +287,7 @@ public class Table3 {
 
         s1 = s2 = s3 = s4 = 0;
         t1 = t2 = t3 = t4 = 0;
+        m1 = m2 = m3 = m4 = 0;
         System.out.println("+++++++++++++++++++++ " + network.getName() + " +++++++++++++++++++++");
         for (int i = 0; i < warmupRepeat; i ++) deltanetPrime(network);
         System.out.println("==================== Loaded ==================== ");
@@ -316,8 +323,8 @@ public class Table3 {
                 verifier.removeRule(rule);
             }
         }
-        System.out.println("Delta-net #Atom: " + verifier.atomSize());
         m1 += printMemory();
+        System.out.println("Delta-net #Atom: " + verifier.atomSize());
         t1 += verifier.opCnt;
         return verifier.printTime(network.updateSequence.size());
     }
@@ -335,8 +342,8 @@ public class Table3 {
                 verifier.update(true);
             }
         }
-        System.out.println("APKeep #EC: " + verifier.predSize());
         m2 += printMemory();
+        System.out.println("APKeep #EC: " + verifier.predSize());
         t2 += verifier.bddEngine.opCnt;
         return verifier.printTime(network.updateSequence.size());
     }
@@ -351,6 +358,7 @@ public class Table3 {
             }
             ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(insertion, deletion);
             verifier.update(conflictFreeChanges);
+            m3 += printMemory();
             t3 += verifier.bddEngine.opCnt;
         } else {
             for (Pair<Boolean, Rule> pair : network.updateSequence) {
@@ -363,14 +371,10 @@ public class Table3 {
                     verifier.update(conflictFreeChanges);
                 }
             }
+            m4 += printMemory();
             t4 += verifier.bddEngine.opCnt;
         }
         System.out.println("Flash #EC: " + verifier.predSize() + (asBatch ? " with Batch" : " w/o Batch"));
-        if (asBatch) {
-            m3 += printMemory();
-        } else {
-            m4 += printMemory();
-        }
         return verifier.printTime(network.updateSequence.size());
     }
 }
