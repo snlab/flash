@@ -100,7 +100,7 @@ public class InverseModel {
         for (Rule r : deviceToRules.get(rule.getDevice()).getAllOverlappingWith(rule, size)) {
             if (!ruleToBddMatch.containsKey(r)) continue;
 
-            if (r.getPriority() >= rule.getPriority() && !r.equals(rule)) {
+            if (r.getPriority() > rule.getPriority()) {
                 int newHit = bddEngine.diff(hit, ruleToBddMatch.get(r));
                 bddEngine.deRef(hit);
                 hit = newHit;
