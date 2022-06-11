@@ -71,7 +71,10 @@ options:
 # SIGCOMM22 Evaluations
 
 ## Effects of Fast IMT
-> TBD
+> TBD export MAVEN_OPTS="-Xmx4g -Dfile.encoding=UTF-8"
+```bash
+nohup java -Xmx28g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e All >consoleMsg.log 2>&1 &
+```
 
 ## Effects of CE2D
 ### CE2D on OpenR dataset

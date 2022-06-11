@@ -1,0 +1,216 @@
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.415653718, 4.325525119, 1.672363212, 4.8937364465 ) s.
+ Operations: (3.80177, 55.53774, 7.17474, 183.82211 ) 1e5.
+ Memory Usage: (2.0458831787109375, 61.31779479980469, 59.257347106933594, 59.40928649902344 ) Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.0899322245, 0.3827452295, 0.091624637, 0.4937897215 ) s.
+ Operations: (1.04093, 4.33052, 1.2534, 12.90343 ) 1e5.
+ Memory Usage: (1.5077667236328125, 70.76507568359375, 68.44219207763672, 68.59416198730469 ) Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.4409825865, 4.215208277, 1.579887535, 4.528322525 ) s.
+ Operations: (3.80177, 55.53774, 7.17474, 183.82211 ) 1e5.
+ Memory Usage: (2.046844482421875, 61.25727081298828, 59.252655029296875, 59.230079650878906 ) Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.0572657925, 0.3051149545, 0.0955866065, 0.354214258 ) s.
+ Operations: (1.04093, 4.33052, 1.2534, 12.90343 ) 1e5.
+ Memory Usage: (1.50872802734375, 70.70455169677734, 68.4375, 68.41495513916016 ) Mb.
+
+
+
+Airtel1 # Rules: 38100 # Switches: 32
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.057524767, 0.558174096, 0.1878646585, 0.450523473 ) s.
+ Operations: (0.75359, 6.26508, 1.06327, 10.51248 ) 1e5.
+ Memory Usage: (1.2429962158203125, 94.01323699951172, 91.49494934082031, 91.5201416015625 ) Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.233209919, 20.357005118, 1.7256494055, 4.436244186 ) s.
+ Operations: (5.77585, 80.92504, 13.98225, 160.2445 ) 1e5.
+ Memory Usage: (7.7883453369140625, 175.313720703125, 158.88307189941406, 155.91217041015625 ) Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.4045233555, 4.4953816425, 1.6551518165, 4.7530685845 ) s.
+ Operations: (3.80177, 55.53774, 7.17474, 183.82211 ) 1e5.
+ Memory Usage: (2.0394668579101562, 61.31040954589844, 59.24518585205078, 59.28418731689453 ) Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+deltanet, apkeep, jiffy, jiffy w/o imt
+ Total time: (0.0488520115, 0.361103895, 0.090777416, 0.3924578185 ) s.
+ Operations: (1.04093, 4.33052, 1.2534, 12.90343 ) 1e5.
+ Memory Usage: (1.5013504028320312, 70.7576904296875, 68.4300308227539, 68.46906280517578 ) Mb.
+
+
+
+Airtel1 # Rules: 0 # Switches: 68
+Deltanet*, APKeep*, Flash
+ Total time: (5.3090231145, 56.7961951445, 7.406346234 ) s.
+ Operations: (136.43471, 1237.52183, 0.90768 ) 1e5.
+ Memory Usage: (7.776756286621094, 75.15074920654297, 69.05455780029297 ) Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+Deltanet*, APKeep*, Flash
+ Total time: (0.309893415, 4.9503506325, 1.588145231 ) s.
+ Operations: (3.80177, 55.53774, 7.16732 ) 1e5.
+ Memory Usage: (9.10223388671875, 157.5121078491211, 149.35721588134766 ) Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+Deltanet*, APKeep*, Flash
+ Total time: (0.053497257, 0.363795474, 0.0849113095 ) s.
+ Operations: (1.04093, 4.33052, 1.18527 ) 1e5.
+ Memory Usage: (8.564346313476562, 167.63356018066406, 159.2162322998047 ) Mb.
+
+
+
+Airtel1 # Updates: 0 # Switches: 68
+Deltanet*, APKeep*, Flash
+ Total time: (4.3047142445, 48.91090194, 7.1103275465 ) s.
+ Operations: (136.43471, 1237.52183, 0.90768 ) 1e5.
+ Memory Usage: (7.7767791748046875, 75.22030639648438, 69.12057495117188 ) Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+Deltanet*, APKeep*, Flash
+ Total time: (0.2994549895, 4.1606934225, 1.6187756565 ) s.
+ Operations: (3.80177, 55.53774, 7.16732 ) 1e5.
+ Memory Usage: (9.103981018066406, 157.58338928222656, 149.42495727539062 ) Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+Deltanet*, APKeep*, Flash
+ Total time: (0.0500891945, 0.361720656, 0.108729924 ) s.
+ Operations: (1.04093, 4.33052, 1.22803 ) 1e5.
+ Memory Usage: (8.566093444824219, 167.7041473388672, 159.28553009033203 ) Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+Deltanet*, APKeep*, Flash
+ Total time: (0.205493609, 17.424838397, 1.8220133625 ) s.
+ Operations: (5.77585, 80.92504, 13.98283 ) 1e5.
+ Memory Usage: (15.111442565917969, 281.7703399658203, 258.50347900390625 ) Mb.
+
+
+
+Airtel1 # Updates: 0 # Switches: 68
+Deltanet*, APKeep*, Flash
+ Total time: (6.0826573715, 58.9739623775, 6.6710842485 ) s.
+ Operations: (136.43471, 1237.52183, 0.90768 ) 1e5.
+ Memory Usage: (7.7767791748046875, 74.7646484375, 69.05458068847656 ) Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+Deltanet*, APKeep*, Flash
+ Total time: (0.268762333, 4.251388627, 1.6286512575 ) s.
+ Operations: (3.80177, 55.53774, 7.16732 ) 1e5.
+ Memory Usage: (9.102630615234375, 157.12638092041016, 149.35761260986328 ) Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+Deltanet*, APKeep*, Flash
+ Total time: (0.0513402545, 0.33860149, 0.109734634 ) s.
+ Operations: (1.04093, 4.33052, 1.22803 ) 1e5.
+ Memory Usage: (8.735267639160156, 167.41766357421875, 159.38871002197266 ) Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+Deltanet*, APKeep*, Flash
+ Total time: (0.2121187405, 22.095853858, 1.643014711 ) s.
+ Operations: (5.77585, 80.92504, 13.98482 ) 1e5.
+ Memory Usage: (15.280616760253906, 281.4093551635742, 258.6066589355469 ) Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.412015828, 22.170002551, 1.992787889 s.
+ Operations: 5.77585, 80.92504, 13.98504 1e5.
+ Memory Usage: 6.577728271484375, 113.83799743652344, 99.2905502319336 Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.3622406835, 22.0573795105, 1.996579475 s.
+ Operations: 5.77585, 80.92504, 13.98504 1e5.
+ Memory Usage: 6.5776214599609375, 114.06634521484375, 99.2905502319336 Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.35144951, 23.083642646, 2.130289854 s.
+ Operations: 5.77585, 80.92504, 13.98504 1e5.
+ Memory Usage: 6.5776519775390625, 114.06061553955078, 99.29047393798828 Mb.
+
+
+
+Stanford # Rules: 3840 # Switches: 16
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.0662038655, 0.8302991975, 0.23017843 s.
+ Operations: 1.04093, 4.33052, 1.26232 1e5.
+ Memory Usage: 6.0386962890625, 124.18054962158203, 109.14952850341797 Mb.
+
+nohup java -Xmx31g -jar flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar -e OverallPerformance >consoleMsg.log 2>&1 &
+
+Internet2 # Rules: 126017 # Switches: 9
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.241378031, 4.735639711, 1.650894479 s.
+ Operations: 3.80177, 55.53774, 7.15868 1e5.
+ Memory Usage: 7.364601135253906, 206.54215240478516, 190.13685607910156 Mb.
+
+
+
+LNet0 # Rules: 288768 # Switches: 6016
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.2610898255, 19.984979121, 1.7478476335 s.
+ Operations: 5.77585, 80.92504, 13.98368 1e5.
+ Memory Usage: 6.5778350830078125, 113.86186218261719, 99.2906265258789 Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.3676873695, 31.954716851, 46.505191118 s.
+ Operations: 3.80177, 49.2802, 6.51364 1e5.
+ Memory Usage: 28.597007751464844, 44.82587432861328, 36.986961364746094 Mb.
+
+
+
+Internet2 # Rules: 126017 # Switches: 9
+============= Delta-net*, APKeep*, Flash
+ Total time: 0.415905535, 5.064252895, 1.7786097545 s.
+ Operations: 3.80177, 55.53771, 7.16196 1e5.
+ Memory Usage: 29.010238647460938, 99.16526794433594, 91.19667053222656 Mb.

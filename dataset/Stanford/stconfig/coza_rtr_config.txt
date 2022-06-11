@@ -900,7 +900,7 @@ interface Group-Async1
  encapsulation slip
 !
 router ospf 32
- log-adjacency-changes
+ log-adjacency-conflictFreeChanges
 !
 !
 end
