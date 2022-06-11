@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.snlab.evaluation.Main;
 import org.snlab.flash.Dispatcher;
-import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
@@ -54,7 +54,7 @@ public class EpochInstance {
                     deletions.add(rule);
                 }
             }
-            Changes cgs = model.miniBatch(insertions, deletions);
+            ConflictFreeChanges cgs = model.miniBatch(insertions, deletions);
             Set<Integer> transfered = model.update(cgs);
 
             if (Main.evalOptions.mode.equals("PUV") || Main.evalOptions.mode.equals("BUV")) {

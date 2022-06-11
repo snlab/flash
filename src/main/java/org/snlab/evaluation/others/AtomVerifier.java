@@ -8,7 +8,7 @@ import org.snlab.network.Rule;
 import java.util.*;
 
 /**
- * Cite "Delta-net: Real-time Network Verification Using Atoms"
+ * We implement Delta-net* according to "Delta-net: Real-time Network Verification Using Atoms"
  *
  * Each atom with range [l, r) is represented as an Long equals to l.
  * Notice the ``source'' is represented as Port (= rule.getOutPort()).
@@ -56,8 +56,8 @@ public class AtomVerifier {
         long L = r.getMatch().longValue(), H = rH(L, r.getPrefix());
         ArrayList<Pair<Long, Long>> ret = new ArrayList<>();
 
-        // for lpm-match, each rule is represented as a single interval;
-        // for multi-field extension, each rule is represented as many intervals.
+        // For lpm-match only, each rule is represented as a single interval;
+        // In our multi-field extension (suffix-match on src), each rule is represented as many intervals.
         for (int i = 0; i < (1 << r.getSrcSuffix()); i ++) {
             long srcEncoding = (i * rH(0, r.getSrcSuffix()) + r.getSrc()) << 32;
             createInterval(L + srcEncoding, H + srcEncoding, ret);
@@ -159,7 +159,7 @@ public class AtomVerifier {
                 }
             }
 
-            // remove empty atoms
+            // Extension to remove deleted atom
             if (bst.isEmpty()) {
                 owner.get(a).remove(r.getDevice());
                 if (owner.get(a).isEmpty()) {
@@ -217,7 +217,7 @@ public class AtomVerifier {
      * @return #PEC
      */
     public int checkPECSize() {
-        int ret = 0; // assume there is a PEC taking default actions on all switches
+        int ret = 0; // MAX -> \inf is not counted
 
         HashMap<Long, HashSet<Port>> atomToActions = new HashMap<>();
         for (Map.Entry<Port, HashSet<Long>> entry : label.entrySet()) {

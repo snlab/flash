@@ -7,14 +7,14 @@ import java.util.TreeMap;
 
 import org.snlab.network.Port;
 
-public class Changes {
+public class ConflictFreeChanges {
     private final BDDEngine bddEngine;
     private final HashMap<Port, Integer> newPortToBdd;
     private final HashMap<Integer, TreeMap<Integer, Port>> predToChanges;
 
     private int changeCnt;
 
-    public Changes(BDDEngine bddEngine) {
+    public ConflictFreeChanges(BDDEngine bddEngine) {
         this.bddEngine = bddEngine;
         this.newPortToBdd = new HashMap<>();
         this.predToChanges = new HashMap<>();
@@ -56,7 +56,7 @@ public class Changes {
         }
     }
 
-    public void merge(Changes t) {
+    public void merge(ConflictFreeChanges t) {
         for (Map.Entry<Port, Integer> entry : t.newPortToBdd.entrySet()) {
             this.add(entry.getValue(), null, entry.getKey());
         }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.snlab.network.Port;
 
+// Simply store ports as an array list
 public class ArrayPorts extends Ports {
     private final HashMap<Integer, Integer> uidToPos;
     private final Port[] ports;

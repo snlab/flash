@@ -10,7 +10,7 @@ import org.snlab.flash.Dispatcher;
 import org.snlab.flash.CE2D.EarlyDetector;
 import org.snlab.flash.CE2D.Setting;
 import org.snlab.flash.ModelManager.InverseModel;
-import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
 import org.snlab.networkLoader.I2Network;
@@ -33,8 +33,8 @@ public class I2LongTail {
                 long startAt = System.nanoTime();
                 
                 for (Device device : remains) {
-                    Changes changes = verifier.insertMiniBatch(device.getInitialRules());
-                    verifier.update(changes);
+                    ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(device.getInitialRules());
+                    verifier.update(conflictFreeChanges);
                     Setting setting = new Setting(i, cnt, startAt);
                     earlyDetector.detectLoop(setting, network, new HashSet<>(Arrays.asList(device)),
                             verifier.getPortToPredicate());

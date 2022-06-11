@@ -13,7 +13,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.snlab.flash.Dispatcher;
 import org.snlab.flash.CE2D.PGEdge;
 import org.snlab.flash.CE2D.PropertyChecker;
-import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.flash.ModelManager.Ports.Ports;
 import org.snlab.network.Device;
@@ -45,8 +45,8 @@ public class LNet1AllPair {
             List<Rule> rulesInSubspace = device.getInitialRules().stream()
                     .filter(rule -> rule.getMatch().longValue() == ip)
                     .collect(Collectors.toList());
-            Changes changes = verifier.insertMiniBatch(rulesInSubspace);
-            verifier.update(changes);
+            ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(rulesInSubspace);
+            verifier.update(conflictFreeChanges);
             // if (policyChecker.stop) {
             // break;
             // }

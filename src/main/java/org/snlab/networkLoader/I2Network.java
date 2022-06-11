@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.flash.ModelManager.Ports.PersistentPorts;
-import org.snlab.flash.ModelManager.Changes;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Device;
 import org.snlab.network.Network;
@@ -87,7 +87,7 @@ public class I2Network {
             Network n = getNetwork();
             InverseModel verifier = new InverseModel(n, new PersistentPorts());
             long s = System.nanoTime();
-            Changes cgs = verifier.insertMiniBatch(n.getInitialRules());
+            ConflictFreeChanges cgs = verifier.insertMiniBatch(n.getInitialRules());
             verifier.update(cgs);
             System.out.println(verifier.predSize() + " " + (System.nanoTime() - s));
         }

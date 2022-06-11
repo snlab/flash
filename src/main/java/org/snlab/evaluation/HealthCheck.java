@@ -2,13 +2,12 @@ package org.snlab.evaluation;
 
 import org.snlab.evaluation.others.APVerifier;
 import org.snlab.evaluation.others.AtomVerifier;
-import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.flash.ModelManager.Ports.ArrayPorts;
 import org.snlab.flash.ModelManager.Ports.PersistentPorts;
 import org.snlab.network.Network;
 import org.snlab.network.Rule;
-import org.snlab.networkLoader.Airtel1Network;
 import org.snlab.networkLoader.I2Network;
 import org.snlab.networkLoader.StanfordNetwork;
 
@@ -42,8 +41,8 @@ public class HealthCheck {
 
             AtomVerifier.insertRule(rule);
 
-            Changes changes = FIMT.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
-            FIMT.update(changes);
+            ConflictFreeChanges conflictFreeChanges = FIMT.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
+            FIMT.update(conflictFreeChanges);
 
             if (APVerifier.predSize() != FIMT.predSize()) {
                 System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");
@@ -61,8 +60,8 @@ public class HealthCheck {
 
             AtomVerifier.removeRule(rule);
 
-            Changes changes = FIMT.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
-            FIMT.update(changes);
+            ConflictFreeChanges conflictFreeChanges = FIMT.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
+            FIMT.update(conflictFreeChanges);
 
             if (APVerifier.predSize() != FIMT.predSize()) {
                 System.out.println("Something wrong at " + cnt + " updates while #ECs of APVerifier, FIMT = (" + APVerifier.predSize() + ", " + FIMT.predSize() + ")");

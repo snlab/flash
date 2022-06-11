@@ -5,6 +5,7 @@ import java.util.*;
 import org.snlab.network.Device;
 import org.snlab.network.Port;
 
+// Store ports with persistent data structure
 public class PersistentPorts extends Ports {
     private final Port p;
     private final int hash;

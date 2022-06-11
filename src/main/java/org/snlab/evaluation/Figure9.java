@@ -1,7 +1,7 @@
 package org.snlab.evaluation;
 
 import org.jgrapht.alg.util.Pair;
-import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.flash.ModelManager.Ports.PersistentPorts;
 import org.snlab.network.Network;
@@ -104,14 +104,14 @@ public class Figure9 {
             rules.add(rule);
             cnt ++;
             if (cnt % size == 0) {
-                Changes changes = verifier.insertMiniBatch(rules);
-                verifier.update(changes);
+                ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(rules);
+                verifier.update(conflictFreeChanges);
                 rules.clear();
             }
         }
         if (rules.size() > 0) {
-            Changes changes = verifier.insertMiniBatch(rules);
-            verifier.update(changes);
+            ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(rules);
+            verifier.update(conflictFreeChanges);
             rules.clear();
         }
         if (testDeletion) {
@@ -121,14 +121,14 @@ public class Figure9 {
                 rules.add(rule);
                 cnt ++;
                 if (cnt % size == 0) {
-                    Changes changes = verifier.miniBatch(new ArrayList<>(), rules);
-                    verifier.update(changes);
+                    ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(new ArrayList<>(), rules);
+                    verifier.update(conflictFreeChanges);
                     rules.clear();
                 }
             }
             if (rules.size() > 0) {
-                Changes changes = verifier.miniBatch(new ArrayList<>(), rules);
-                verifier.update(changes);
+                ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(new ArrayList<>(), rules);
+                verifier.update(conflictFreeChanges);
                 rules.clear();
             }
         }
@@ -148,16 +148,16 @@ public class Figure9 {
             if (pair.getFirst()) insertion.add(pair.getSecond()); else deletion.add(pair.getSecond());
 
             if (cnt % size == 0) {
-                Changes changes = verifier.miniBatch(insertion, deletion);
-                verifier.update(changes);
+                ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(insertion, deletion);
+                verifier.update(conflictFreeChanges);
 
                 insertion.clear();
                 deletion.clear();
             }
         }
         if (cnt % size != 0) {
-            Changes changes = verifier.miniBatch(insertion, deletion);
-            verifier.update(changes);
+            ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(insertion, deletion);
+            verifier.update(conflictFreeChanges);
         }
 
         System.out.println("Flash #EC: " + verifier.predSize() + (" 100 batch"));

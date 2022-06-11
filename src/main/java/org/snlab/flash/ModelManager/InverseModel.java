@@ -15,7 +15,7 @@ public class InverseModel {
     private int size = 32; // length of packet header
 
     private final HashMap<Rule, Integer> ruleToBddMatch;
-    private final HashMap<Device, TrieRules> deviceToRules; // FIB snapshots
+    private final HashMap<Device, IndexedRules> deviceToRules; // FIB snapshots
     public HashMap<Ports, Integer> portsToPredicate; // network inverse model
 
     private double s1 = 0, s1to2 = 0, s2 = 0, sports = 0;
@@ -44,7 +44,7 @@ public class InverseModel {
         this.ruleToBddMatch = new HashMap<>();
 
         // Relabel every device as the index used by Ports, starting from 0
-        for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new TrieRules());
+        for (Device device : network.getAllDevices()) this.deviceToRules.put(device, new IndexedRules());
 
         // Each device has a default rule with default action.
         ArrayList<Port> key = new ArrayList<>();
@@ -61,7 +61,7 @@ public class InverseModel {
         this.portsToPredicate.put(base.create(key, 0, key.size()), BDDEngine.BDDTrue);
     }
 
-    public Changes insertMiniBatch(List<Rule> insertions) {
+    public ConflictFreeChanges insertMiniBatch(List<Rule> insertions) {
         return this.miniBatch(insertions, new ArrayList<>());
     }
 
@@ -71,7 +71,7 @@ public class InverseModel {
      * @param deletions  f - f'
      * @return the change \chi
      */
-    public Changes miniBatch(List<Rule> insertions, List<Rule> deletions) {
+    public ConflictFreeChanges miniBatch(List<Rule> insertions, List<Rule> deletions) {
         s1 -= System.nanoTime();
         HashSet<Rule> inserted = new HashSet<>();
         HashSet<Rule> deleted = new HashSet<>(deletions);
@@ -86,7 +86,7 @@ public class InverseModel {
         }
         for (Rule rule : deleted) deviceToRules.get(rule.getDevice()).remove(rule, size);
 
-        Changes ret = new Changes(bddEngine);
+        ConflictFreeChanges ret = new ConflictFreeChanges(bddEngine);
         // Notice recomputing the #ECs can be faster than rule-deleting if many rules are deleted (especially when all rules are deleted).
         // For the purpose of evaluation, we did not go through such short-cut.
         for (Rule rule : deleted) identifyChangesDeletion(rule, ret);
@@ -115,7 +115,7 @@ public class InverseModel {
      * @param rule an inserted rule
      * @param ret  the pointer to the value returned by this function
      */
-    private void identifyChangesInsert(Rule rule, Changes ret) {
+    private void identifyChangesInsert(Rule rule, ConflictFreeChanges ret) {
         int hit = getHit(rule);
         if (hit != BDDEngine.BDDFalse) {
             s1 += System.nanoTime();
@@ -128,10 +128,10 @@ public class InverseModel {
         }
     }
 
-    private void identifyChangesDeletion(Rule rule, Changes ret) {
+    private void identifyChangesDeletion(Rule rule, ConflictFreeChanges ret) {
         if (ruleToBddMatch.get(rule) == null) return; // cannot find the rule to be removed
 
-        TrieRules targetNode = deviceToRules.get(rule.getDevice());
+        IndexedRules targetNode = deviceToRules.get(rule.getDevice());
         ArrayList<Rule> sorted = targetNode.getAllOverlappingWith(rule, size);
         Comparator<Rule> comp = (Rule lhs, Rule rhs) -> rhs.getPriority() - lhs.getPriority();
         sorted.sort(comp);
@@ -176,21 +176,21 @@ public class InverseModel {
 
     /**
      * Fast Inverse Model Transformation
-     * Updates the PPM following changes and returns all transferred ECs.
+     * Updates and returns all transferred ECs.
      *
-     * @param changes -
+     * @param conflictFreeChanges -
      * @return -
      */
-    public HashSet<Integer> update(Changes changes) {
+    public HashSet<Integer> update(ConflictFreeChanges conflictFreeChanges) {
         s1to2 -= System.nanoTime();
-        changes.aggrBDDs();
+        conflictFreeChanges.aggrBDDs();
         s1to2 += System.nanoTime();
 
 
         s2 -= System.nanoTime();
         HashSet<Integer> transferredECs = new HashSet<>();
 
-        for (Map.Entry<Integer, TreeMap<Integer, Port>> entryI : changes.getAll().entrySet()) {
+        for (Map.Entry<Integer, TreeMap<Integer, Port>> entryI : conflictFreeChanges.getAll().entrySet()) {
             int delta = entryI.getKey();
             bddEngine.ref(delta);
 
@@ -236,7 +236,7 @@ public class InverseModel {
         s2 += System.nanoTime();
 
         // Manually deref BDDs used by Changes since its deconstructor doesn't handle this.
-        changes.releaseBDDs();
+        conflictFreeChanges.releaseBDDs();
         return transferredECs;
     }
 

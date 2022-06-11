@@ -7,7 +7,7 @@ import org.snlab.evaluation.others.Checker;
 import org.snlab.flash.ModelManager.Ports.ArrayPorts;
 import org.snlab.flash.ModelManager.Ports.Ports;
 import org.snlab.flash.ModelManager.Ports.PersistentPorts;
-import org.snlab.flash.ModelManager.Changes;
+import org.snlab.flash.ModelManager.ConflictFreeChanges;
 import org.snlab.flash.ModelManager.InverseModel;
 import org.snlab.network.Network;
 import org.snlab.network.Port;
@@ -35,15 +35,12 @@ public class Table3 {
 
     public static void run(boolean omit) {
         Table3.omit = omit;
-        try {
-            evaluateOnSequence(Airtel1Network.getNetwork().setName("Airtel1"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
-        evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
 
         Network network = LNetNetwork.getLNET().setName("LNet0");
+        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
+        evaluateOnSnapshot(network);
+
+        network = LNetNetwork.getLNET1().setName("LNet1");
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
 
@@ -51,9 +48,13 @@ public class Table3 {
         network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
         evaluateOnSnapshot(network);
 
-        network = LNetNetwork.getLNET1().setName("LNet1");
-        network.filterIntoSubsapce(1L << 24, ((1L << 8) - 1) << 24);
-        evaluateOnSnapshot(network);
+        try {
+            evaluateOnUpdatesSequence(Airtel1Network.getNetwork().setName("Airtel1"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        evaluateOnSnapshot(StanfordNetwork.getNetwork().setName("Stanford"));
+        evaluateOnSnapshot(I2Network.getNetwork().setName("Internet2"));
 
         network = null;
         System.gc();
@@ -73,12 +74,12 @@ public class Table3 {
         printWriter.println();
         printWriter.println();
         printWriter.println(networkInfo);
-        printWriter.println("Deltanet*, APKeep*, Flash");
+        printWriter.println("============= Delta-net*, APKeep*, Flash");
         ratio = 1e9  * (testDeletion ? 2 : 1) * testRepeat;
-        printWriter.println(" Total time: (" + (s1 / ratio) + ", " + (s2 / ratio) + ", " + (s3 / ratio) + " ) s.");
+        printWriter.println(" Total time: " + (s1 / ratio) + ", " + (s2 / ratio) + ", " + (s3 / ratio) + " s.");
         double repeats = warmupRepeat + testRepeat, operationRatio = 1e5 * repeats;
-        printWriter.println(" Operations: (" + (t1 / operationRatio) + ", " + (t2 / operationRatio) + ", " + (t3 / operationRatio) + " ) 1e5.");
-        printWriter.println(" Memory Usage: (" + (m1 / repeats) + ", " + (m2 / repeats) + ", " + (m3 / repeats) + " ) Mb.");
+        printWriter.println(" Operations: " + (t1 / operationRatio) + ", " + (t2 / operationRatio) + ", " + (t3 / operationRatio) + " 1e5.");
+        printWriter.println(" Memory Usage: " + (m1 / repeats) + ", " + (m2 / repeats) + ", " + (m3 / repeats) + " Mb.");
         printWriter.close();
     }
 
@@ -86,7 +87,8 @@ public class Table3 {
     private static double t1, t2, t3, t4;
     private static double m1, m2, m3, m4;
 
-    public static void evaluateOnSnapshot(Network network) { // Table 3
+    // Table 3
+    public static void evaluateOnSnapshot(Network network) {
         System.gc();
         System.runFinalization();
         System.out.println("# Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
@@ -118,13 +120,21 @@ public class Table3 {
          */
         printLog("overall.txt", network.getName() + " # Rules: " + network.getInitialRules().size() + " # Switches: " + network.getAllDevices().size());
         System.out.println("+++++++++++++++++++++ END " + network.getName() + " END +++++++++++++++++++++");
-        // checkAllPair(network);
+        /*
+        try {
+            checkAllPairRechabilityAndLoopfree(network);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+         */
     }
 
-    private static void checkAllPair(Network network) throws IOException {
+    // This part is deprecated since its time-consumption is negligible compared to model construction.
+    // Notice Deltanet* has more #ECs compared to APKeep and Flash, which should be slower in this part.
+    private static void checkAllPairRechabilityAndLoopfree(Network network) throws IOException {
         InverseModel ver1 = new InverseModel(network, new PersistentPorts());
-        Changes changes = ver1.insertMiniBatch(network.getInitialRules());
-        ver1.update(changes);
+        ConflictFreeChanges conflictFreeChanges = ver1.insertMiniBatch(network.getInitialRules());
+        ver1.update(conflictFreeChanges);
 
         PrintWriter printWriter = new PrintWriter(new FileWriter("all-pair.txt", true));
         printWriter.println();
@@ -173,6 +183,7 @@ public class Table3 {
         printWriter.close();
     }
 
+    // The memory estimation is not very precise :(
     private static double printMemory() {
         System.gc();
         double memoryAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(), ret = ((memoryAfter - memoryBefore) / byte2MB);
@@ -218,34 +229,34 @@ public class Table3 {
         return verifier.printTime(network.getInitialRules().size() * (testDeletion ? 2 : 1));
     }
 
-    private static double seq(Network network, boolean useFFMT) {
+    private static double seq(Network network, boolean asBatch) {
         System.gc();
         InverseModel verifier = new InverseModel(network, new PersistentPorts());
-        if (useFFMT) {
-            Changes changes = verifier.insertMiniBatch(network.getInitialRules());
-            verifier.update(changes);
+        if (asBatch) {
+            ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(network.getInitialRules());
+            verifier.update(conflictFreeChanges);
             if (testDeletion) {
-                System.out.println("Flash #EC (full snapshot): " + verifier.predSize() + " with FFMT");
-                changes = verifier.miniBatch(new ArrayList<>(), network.getInitialRules());
-                verifier.update(changes);
+                System.out.println("Flash #EC (full snapshot): " + verifier.predSize() + " with Batch");
+                conflictFreeChanges = verifier.miniBatch(new ArrayList<>(), network.getInitialRules());
+                verifier.update(conflictFreeChanges);
             }
             t3 += verifier.bddEngine.opCnt;
         } else {
             for (Rule rule : network.getInitialRules()) {
-                Changes changes = verifier.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
-                verifier.update(changes);
+                ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
+                verifier.update(conflictFreeChanges);
             }
             if (testDeletion) {
-                System.out.println("Flash #EC (deleted to empty): " + verifier.predSize() + " w/o FFMT");
+                System.out.println("Flash #EC (deleted to empty): " + verifier.predSize() + " w/o Batch");
                 for (Rule rule : network.getInitialRules()) {
-                    Changes changes = verifier.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
-                    verifier.update(changes);
+                    ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
+                    verifier.update(conflictFreeChanges);
                 }
             }
             t4 += verifier.bddEngine.opCnt;
         }
-        System.out.println("Flash #EC: " + verifier.predSize() + (useFFMT ? " with FFMT" : " w/o FFMT"));
-        if (useFFMT) {
+        System.out.println("Flash #EC: " + verifier.predSize() + (asBatch ? " with Batch" : " w/o Batch"));
+        if (asBatch) {
             m3 += printMemory();
         } else {
             m4 += printMemory();
@@ -253,7 +264,7 @@ public class Table3 {
         return verifier.printTime(network.getInitialRules().size() * (testDeletion ? 2 : 1));
     }
 
-    public static void evaluateOnSequence(Network network) { // Table 3
+    public static void evaluateOnUpdatesSequence(Network network) { // Table 3
         System.gc();
         System.runFinalization();
         System.out.println("# Updates: " + network.updateSequence.size() + " # Switches: " + network.getAllDevices().size());
@@ -322,32 +333,32 @@ public class Table3 {
         return verifier.printTime(network.updateSequence.size());
     }
 
-    private static double seqPrime(Network network, boolean useFFMT) {
+    private static double seqPrime(Network network, boolean asBatch) {
         System.gc();
         InverseModel verifier = new InverseModel(network, new PersistentPorts());
-        if (useFFMT) {
+        if (asBatch) {
             ArrayList<Rule> insertion = new ArrayList<>(), deletion = new ArrayList<>();
             for (Pair<Boolean, Rule> pair : network.updateSequence) {
                 if (pair.getFirst()) insertion.add(pair.getSecond()); else deletion.add(pair.getSecond());
             }
-            Changes changes = verifier.miniBatch(insertion, deletion);
-            verifier.update(changes);
+            ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(insertion, deletion);
+            verifier.update(conflictFreeChanges);
             t3 += verifier.bddEngine.opCnt;
         } else {
             for (Pair<Boolean, Rule> pair : network.updateSequence) {
                 Rule rule = pair.getSecond();
                 if (pair.getFirst()) {
-                    Changes changes = verifier.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
-                    verifier.update(changes);
+                    ConflictFreeChanges conflictFreeChanges = verifier.insertMiniBatch(new ArrayList<>(Collections.singletonList(rule)));
+                    verifier.update(conflictFreeChanges);
                 } else {
-                    Changes changes = verifier.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
-                    verifier.update(changes);
+                    ConflictFreeChanges conflictFreeChanges = verifier.miniBatch(new ArrayList<>(), new ArrayList<>(Collections.singletonList(rule)));
+                    verifier.update(conflictFreeChanges);
                 }
             }
             t4 += verifier.bddEngine.opCnt;
         }
-        System.out.println("Flash #EC: " + verifier.predSize() + (useFFMT ? " with FFMT" : " w/o FFMT"));
-        if (useFFMT) {
+        System.out.println("Flash #EC: " + verifier.predSize() + (asBatch ? " with Batch" : " w/o Batch"));
+        if (asBatch) {
             m3 += printMemory();
         } else {
             m4 += printMemory();

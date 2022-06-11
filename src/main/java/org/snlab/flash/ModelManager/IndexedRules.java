@@ -5,26 +5,26 @@ import java.util.HashSet;
 
 import org.snlab.network.Rule;
 
-// Build index for prefix-match to reduce the scope of "overlapped rules".
-// Notice the ternary-match is allowed, but without index.
-public class TrieRules {
+// Build tire-index for prefix-match to reduce the scope of "overlapped rules".
+// Notice the ternary-match is allowed, but still indexed by it prefix-part (no prefix is concerned as a 0-length prefix).
+public class IndexedRules {
     HashSet<Rule> rules;
-    TrieRules left, right, dst;
+    IndexedRules left, right, dst;
 
-    public TrieRules() {
+    public IndexedRules() {
         rules = new HashSet<>();
         left = right = null;
     }
 
-    private TrieRules buildNext(int flag) {
+    private IndexedRules buildNext(int flag) {
         if (flag == 0) {
             if (this.left == null) {
-                this.left = new TrieRules();
+                this.left = new IndexedRules();
             }
             return this.left;
         } else {
             if (this.right == null) {
-                this.right = new TrieRules();
+                this.right = new IndexedRules();
             }
             return this.right;
         }
@@ -50,7 +50,7 @@ public class TrieRules {
 
     public void read(Rule rule, ArrayList<Rule> ret, int size) {
         if (this.dst == null) return;
-        TrieRules t = this.dst;
+        IndexedRules t = this.dst;
         if (ret != null) ret.addAll(t.getRules());
 
         long dstIp = rule.getMatch().longValue();
@@ -76,9 +76,9 @@ public class TrieRules {
         }
     }
 
-    public TrieRules traverse(Rule rule, int size) {
-        if (this.dst == null) this.dst = new TrieRules();
-        TrieRules t = this.dst;
+    public IndexedRules traverse(Rule rule, int size) {
+        if (this.dst == null) this.dst = new IndexedRules();
+        IndexedRules t = this.dst;
 
         long dstIp = rule.getMatch().longValue();
         for (int i = 0; i < rule.getPrefix() - (32 - size); i++) {
@@ -89,8 +89,8 @@ public class TrieRules {
         return t;
     }
 
-    public TrieRules traverseSrc(Rule rule, ArrayList<Rule> ret, int size) {
-        TrieRules t = this;
+    public IndexedRules traverseSrc(Rule rule, ArrayList<Rule> ret, int size) {
+        IndexedRules t = this;
         if (ret != null) t.read(rule, ret, size);
 
         long srcIp = rule.getSrc();
