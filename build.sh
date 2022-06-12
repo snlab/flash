@@ -51,6 +51,10 @@ get_datasets() {
 
 jar() {
     echo "=== Building artifact ==="
+    if [ -d /etc/profile.d/maven.sh ]; then
+        install_maven
+    fi
+    
     mvn assembly:assembly
     cp target/flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar ./flash.jar
 }
