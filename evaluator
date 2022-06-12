@@ -23,11 +23,10 @@ if __name__ == '__main__':
     elif eval == 'LNet1AllPair':
         LNet1AllPair(output)
     elif eval == 'overall':
-        os.system('sudo nohup java -Xmx28g -jar flash.jar -e OverallPerformance >consoleMsg.log 2>&1 &')
+        os.system('java -Xmx28g -jar flash.jar -e OverallPerformance | tee consoleMsg.log')
     elif eval == 'breakdown':
-        os.system('sudo nohup java -Xmx28g -jar flash.jar -e Breakdown >consoleMsg.log 2>&1 &')
+        os.system('java -Xmx28g -jar flash.jar -e Breakdown | tee consoleMsg.log')
     elif eval == 'batchSize':
-        os.system('sudo nohup java -Xmx28g -jar flash.jar -e BatchSize >consoleMsg.log 2>&1 &')
+        os.system('java -Xmx28g -jar flash.jar -e BatchSize | tee consoleMsg.log')
     elif eval == 'deadSettings':
-        os.system('sudo nohup java -Xmx28g -jar flash.jar -e DeadSettings >consoleMsg.log 2>&1 &')
-        
+        os.system('java -Xmx28g -jar flash.jar -e DeadSettings | tee consoleMsg.log')

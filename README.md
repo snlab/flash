@@ -97,7 +97,7 @@ The consoleMsg.log provides more detailed information.
 $ ./evaluator -e deadSettings
 ```
 Expected output:
-It provides an interface to try some settings (in Table 3 and Figure) are not solved within 1-hour.
+It provides an interface to try some settings (in Table 3 and Figure 6) are not solved within 1-hour.
 
 ## Effects of CE2D
 ### CE2D on OpenR dataset
