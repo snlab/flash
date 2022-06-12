@@ -59,7 +59,11 @@ To ease the evaluation process, we provide a build script to build Flash and pre
 ```bash
 $ ./build.sh
 ```
-The `build.sh` script will install all necessary libraries, and download all datasets for evaluations, then build the java project. 
+The `build.sh` script will install all necessary libraries, and download all datasets for evaluations, then build the java project.
+
+***Note***:
+
+The script `build.sh` installs JDK 17 by `apt`, which will ask for geographic information, please input correct zone information while installation.
 
 ## Entrypoint
 The `./evaluator` file is the entrypoint for all evaluations, which takes an argument `-e` for the evaluation name.
