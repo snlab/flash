@@ -8,7 +8,7 @@ fi
 
 install_maven() {
     echo "=== Installing maven ==="
-    mvn_version=${mvn_version:-3.8.5}
+    mvn_version=${mvn_version:-3.8.6}
     url="https://dlcdn.apache.org/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
     install_dir="/opt/maven"
     echo $url
