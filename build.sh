@@ -8,7 +8,7 @@ fi
 
 install_maven() {
     echo "=== Installing maven ==="
-    mvn_version=${mvn_version:-3.8.5}
+    mvn_version=${mvn_version:-3.8.6}
     url="https://dlcdn.apache.org/maven/maven-3/${mvn_version}/binaries/apache-maven-${mvn_version}-bin.tar.gz"
     install_dir="/opt/maven"
     echo $url
@@ -51,6 +51,10 @@ get_datasets() {
 
 jar() {
     echo "=== Building artifact ==="
+    if [ -d /etc/profile.d/maven.sh ]; then
+        install_maven
+    fi
+    
     mvn assembly:assembly
     cp target/flash-public-1.0-SNAPSHOT-jar-with-dependencies.jar ./flash.jar
 }

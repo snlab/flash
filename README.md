@@ -26,7 +26,7 @@ To run the evaluations, the following platform and software suits are required:
 * Hardware requirements: A server with 8+ CPU cores and 32GB+ memory is prefered
 * Operating system: Ubuntu Server 20.04 (Other operating systems are untested, but should also work as long as the bellow software suits are avaliable)
 * JDK 17
-* Maven v3.8.5
+* Maven v3.8+
 * Git v2.25.1+
 * Python v3.8+
 * Python3-pip v20.0.0+
@@ -35,7 +35,8 @@ To run the evaluations, the following platform and software suits are required:
 ***Note***:
 
 * Make sure `java` and `mvn` is added to your $PATH environment variable, so that the Flash build script can find them.
-* Make sure `python3` is the default `python` interpreter, check the version by command `python --version`.
+* Maven version must be higher than v3.8, else maven does not work with JDK 17.
+* The `build.sh` script can help to setup the environment above, please refer to `build.sh` to prepare the environment or follow the following instructions to use `build.sh` directly.
   
 ## Get Flash artifact and datasets for evaluation
 
@@ -58,7 +59,11 @@ To ease the evaluation process, we provide a build script to build Flash and pre
 ```bash
 $ ./build.sh
 ```
-The `build.sh` script will install all necessary libraries, and download all datasets for evaluations, then build the java project. 
+The `build.sh` script will install all necessary libraries, and download all datasets for evaluations, then build the java project.
+
+***Note***:
+
+The script `build.sh` installs JDK 17 by `apt`, which will ask for geographic information, please input correct zone information while installation.
 
 ## Entrypoint
 The `./evaluator` file is the entrypoint for all evaluations, which takes an argument `-e` for the evaluation name.
@@ -92,7 +97,7 @@ The consoleMsg.log provides more detailed information.
 $ ./evaluator -e deadSettings
 ```
 Expected output:
-It provides an interface to try some settings (in Table 3 and Figure) are not solved within 1-hour.
+It provides an interface to try some settings (in Table 3 and Figure 6) are not solved within 1-hour.
 
 ## Effects of CE2D
 ### CE2D on OpenR dataset
@@ -123,6 +128,10 @@ The evaluation generates a CDF figuer in `output/I2EarlyDetection.png` (Figure 7
 
 ![](figures/I2EarlyDetection.png)
 
+The figure may vary due to randomness. 
+
+To ease the evaluation process, we use a snapshot of update trace thus the CDF line is different from paper but the results still conform with paper.
+
 ### Consistent Loop Detection on I2* dataset
 
 Run the evaluation:
@@ -140,6 +149,8 @@ The evaluation generates a CDF figuer in `output/I2LongTail{,1}.png` (Figure 7(c
 
 ![](figures/I2LongTail1.png)
 
+
+The figure may vary due to randomness. 
 
 ### All pair reachability check on LNet1 dataset
 
@@ -167,7 +178,7 @@ $ python3 py/BatchSize.py ./
 ```
 
 Expected output: 
-The first line of command generates few log files, e.g., "LNet0bPuUs.txt". Then one can use the second command to draw a figure (Figure 9 in paper).
+The first line of command generates few log files, e.g., "LNet0bPuUs.txt". Then one can use the second command to draw a figure `output/batchSize.png` (Figure 9 in paper).
 
 ![](figures/batchSize.png)
 
