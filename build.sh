@@ -20,7 +20,7 @@ install_maven() {
     sudo mkdir ${install_dir}
     sudo curl -fSL ${url} | sudo tar zx --strip-components=1 -C ${install_dir}
 
-    sudo cat << EOF > /etc/profile.d/maven.sh
+    cat << EOF | sudo tee -a /etc/profile.d/maven.sh
 #!/bin/sh
 export MAVEN_HOME=${install_dir}
 export M2_HOME=${install_dir}
